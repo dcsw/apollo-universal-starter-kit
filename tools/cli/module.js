@@ -12,41 +12,50 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
+function copyRenameFiles(logger, moduleName, location, files, destinationPath) {
+  shell.cp('-R', files, destinationPath);
+  logger.info(`✔ The ${location} files have been copied!`);
+
+  // change to destination directory & rename files & module names
+  // rename files
+  shell.ls('-Rl', destinationPath).forEach(entry => {
+    if (entry.isFile()) {
+      [
+        { name: 'xxxx', newName: moduleName },
+        { name: 'Xxxx', newName: moduleName.capitalize() },
+        { name: 'XXXX', newName: moduleName.toUpperCase() }
+      ].forEach(e => {
+        if (entry.name.indexOf(e.name) >= 0) {
+          const moduleFile = entry.name.replace(e.name, e.newName);
+          shell.mv(`${destinationPath}/${entry.name}`, `${destinationPath}/${moduleFile}`);
+        }
+      });
+    }
+  });
+
+  // replace module names
+  shell.ls('-Rl', destinationPath).forEach(entry => {
+    if (entry.isFile()) {
+      shell.sed('-i', /xxxx/g, moduleName, `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /XXXX/g, moduleName.toUpperCase(), `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /Xxxx/g, moduleName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
+    }
+  });
+}
+
 function copyFiles(logger, templatePath, module, location) {
   logger.info(`Copying ${location} files…`);
 
   // create new module directory
-  const mkdir = shell.mkdir(`${__dirname}/../../src/${location}/modules/${module}`);
+  const mkdir = shell.mkdir(`${__dirname}/../../src/${location}/${module}`);
 
-  // continue only if directory does not jet exist
+  // continue only if directory does not yet exist
   if (mkdir.code === 0) {
-    const destinationPath = `${__dirname}/../../src/${location}/modules/${module}`;
-    shell.cp('-R', `${templatePath}/${location}/*`, destinationPath);
+    const destinationPath = `${__dirname}/../../src/${location}/${module}`;
+    copyRenameFiles(logger, module, location, `${templatePath}/${location}/*`, destinationPath);
 
-    logger.info(`✔ The ${location} files have been copied!`);
-
-    // change to destination directory
-    shell.cd(destinationPath);
-
-    // rename files
-    shell.ls('-Rl', '.').forEach(entry => {
-      if (entry.isFile()) {
-        const moduleFile = entry.name.replace('Module', module.capitalize());
-        shell.mv(entry.name, moduleFile);
-      }
-    });
-
-    // replace module names
-    shell.ls('-Rl', '.').forEach(entry => {
-      if (entry.isFile()) {
-        shell.sed('-i', /\$module\$/g, module, entry.name);
-        shell.sed('-i', /\$Module\$/g, module.toCamelCase().capitalize(), entry.name);
-      }
-    });
-
-    shell.cd('..');
     // get module input data
-    const path = `${__dirname}/../../src/${location}/modules/index.js`;
+    const path = `${__dirname}/../../src/${location}/index.js`;
     let data = fs.readFileSync(path);
 
     // extract Feature modules
@@ -58,7 +67,7 @@ function copyFiles(logger, templatePath, module, location) {
     fs.writeFileSync(path, prepend + data);
 
     // add module to Feature function
-    shell.sed('-i', re, `Feature(${module}, ${match[1]})`, 'index.js');
+    shell.sed('-i', re, `Feature(${module}, ${match[1]})`, path);
 
     logger.info(`✔ Module for ${location} successfully created!`);
   }
@@ -67,20 +76,20 @@ function copyFiles(logger, templatePath, module, location) {
 function deleteFiles(logger, templatePath, module, location) {
   logger.info(`Deleting ${location} files…`);
 
-  const modulePath = `${__dirname}/../../src/${location}/modules/${module}`;
+  const modulePath = `${__dirname}/../../src/${location}/${module}`;
 
   if (fs.existsSync(modulePath)) {
     // create new module directory
     shell.rm('-rf', modulePath);
 
     // change to destination directory
-    shell.cd(`${__dirname}/../../src/${location}/modules/`);
+    shell.cd(`${__dirname}/../../src/${location}/`);
 
     // add module to Feature function
     //let ok = shell.sed('-i', `import ${module} from '.\/${module}';`, '', 'index.js');
 
     // get module input data
-    const path = `${__dirname}/../../src/${location}/modules/index.js`;
+    const path = `${__dirname}/../../src/${location}/index.js`;
     let data = fs.readFileSync(path);
 
     // extract Feature modules
@@ -106,7 +115,15 @@ function deleteFiles(logger, templatePath, module, location) {
 }
 
 module.exports = (action, args, options, logger) => {
-  const templatePath = `${__dirname}/../templates/module`;
+  let templatePath = '';
+  switch (action) {
+    case 'add-crud-list-module':
+      templatePath = `${__dirname}/../crud-list-templates/module`;
+      break;
+    default:
+      templatePath = `${__dirname}/../templates/module`;
+      break;
+  }
 
   if (!fs.existsSync(templatePath)) {
     logger.error(`The requested location for ${args.location} wasn't found.`);
@@ -115,19 +132,45 @@ module.exports = (action, args, options, logger) => {
 
   // client
   if (args.location === 'client' || args.location === 'both') {
-    if (action === 'addmodule') {
-      copyFiles(logger, templatePath, args.module, 'client');
-    } else if (action === 'deletemodule') {
-      deleteFiles(logger, templatePath, args.module, 'client');
+    switch (action) {
+      case 'addmodule':
+      case 'add-crud-list-module':
+        copyFiles(logger, templatePath, args.module, 'client/modules');
+        break;
+      case 'deletemodule':
+        deleteFiles(logger, templatePath, args.module, 'client/modules');
+        break;
     }
   }
 
   // server
   if (args.location === 'server' || args.location === 'both') {
-    if (action === 'addmodule') {
-      copyFiles(logger, templatePath, args.module, 'server');
-    } else if (action === 'deletemodule') {
-      deleteFiles(logger, templatePath, args.module, 'server');
+    switch (action) {
+      case 'addmodule':
+      case 'add-crud-list-module':
+        copyFiles(logger, templatePath, args.module, 'server/modules');
+        if (fs.existsSync(`${templatePath}/server/database`)) {
+          copyRenameFiles(
+            logger,
+            args.module,
+            'server/database',
+            `${templatePath}/server/database/*`,
+            `${__dirname}/../../src/server/database`
+          );
+        }
+        break;
+      case 'deletemodule':
+        deleteFiles(logger, templatePath, args.module, 'server/modules');
+        [`${__dirname}/../../src/server/database/migrations`, `${__dirname}/../../src/server/database/seeds`].forEach(
+          d => {
+            [args.module, args.module.capitalize(), args.module.toUpperCase()].forEach(m => {
+              if (fs.existsSync(`${d}/003_${m}.js`)) {
+                fs.unlinkSync(`${d}/003_${m}.js`);
+              }
+            });
+          }
+        );
+        break;
     }
   }
 };

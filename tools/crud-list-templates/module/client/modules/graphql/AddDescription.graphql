@@ -1,0 +1,7 @@
+#import "./Description.graphql"
+
+mutation addDescription($input: AddDescriptionInput!) {
+  addDescription(input: $input) {
+    ...DescriptionInfo
+  }
+}

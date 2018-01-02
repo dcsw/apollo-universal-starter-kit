@@ -1,0 +1,4 @@
+fragment DescriptionInfo on Description {
+  id
+  content
+}

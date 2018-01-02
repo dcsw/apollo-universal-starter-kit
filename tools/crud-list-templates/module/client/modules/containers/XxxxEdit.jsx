@@ -2,18 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { graphql, compose } from 'react-apollo';
 
-import PostEditView from '../components/PostEditView';
-import { AddPost } from './Post';
+import XxxxEditView from '../components/XxxxEditView';
+import { AddXxxx } from './Xxxx';
 
-import POST_QUERY from '../graphql/PostQuery.graphql';
-import ADD_POST from '../graphql/AddPost.graphql';
-import EDIT_POST from '../graphql/EditPost.graphql';
-import POST_SUBSCRIPTION from '../graphql/PostSubscription.graphql';
+import XXXX_QUERY from '../graphql/XxxxQuery.graphql';
+import ADD_XXXX from '../graphql/AddXxxx.graphql';
+import EDIT_XXXX from '../graphql/EditXxxx.graphql';
+import XXXX_SUBSCRIPTION from '../graphql/XxxxSubscription.graphql';
 
-class PostEdit extends React.Component {
+class XxxxEdit extends React.Component {
   static propTypes = {
     loading: PropTypes.bool.isRequired,
-    post: PropTypes.object,
+    xxxx: PropTypes.object,
     subscribeToMore: PropTypes.func.isRequired
   };
 
@@ -25,14 +25,14 @@ class PostEdit extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (!nextProps.loading) {
       // Check if props have changed and, if necessary, stop the subscription
-      if (this.subscription && this.props.post.id !== nextProps.post.id) {
+      if (this.subscription && this.props.xxxx.id !== nextProps.xxxx.id) {
         this.subscription();
         this.subscription = null;
       }
 
       // Subscribe or re-subscribe
-      if (!this.subscription && nextProps.post) {
-        this.subscribeToPostEdit(nextProps.post.id);
+      if (!this.subscription && nextProps.xxxx) {
+        this.subscribeToXxxxEdit(nextProps.xxxx.id);
       }
     }
   }
@@ -44,22 +44,22 @@ class PostEdit extends React.Component {
     }
   }
 
-  subscribeToPostEdit = postId => {
+  subscribeToXxxxEdit = xxxxId => {
     const { subscribeToMore } = this.props;
 
     this.subscription = subscribeToMore({
-      document: POST_SUBSCRIPTION,
-      variables: { id: postId }
+      document: XXXX_SUBSCRIPTION,
+      variables: { id: xxxxId }
     });
   };
 
   render() {
-    return <PostEditView {...this.props} />;
+    return <XxxxEditView {...this.props} />;
   }
 }
 
 export default compose(
-  graphql(POST_QUERY, {
+  graphql(XXXX_QUERY, {
     options: props => {
       let id = 0;
       if (props.match) {
@@ -72,55 +72,55 @@ export default compose(
         variables: { id }
       };
     },
-    props({ data: { loading, error, post, subscribeToMore } }) {
+    props({ data: { loading, error, xxxx, subscribeToMore } }) {
       if (error) throw new Error(error);
-      return { loading, post, subscribeToMore };
+      return { loading, xxxx, subscribeToMore };
     }
   }),
-  graphql(ADD_POST, {
+  graphql(ADD_XXXX, {
     props: ({ ownProps: { history, navigation }, mutate }) => ({
-      addPost: async (title, content) => {
-        let postData = await mutate({
+      addXxxx: async (title, content) => {
+        let xxxxData = await mutate({
           variables: { input: { title, content } },
           // optimisticResponse: {
           //   __typename: 'Mutation',
-          //   addPost: {
-          //     __typename: 'Post',
+          //   addXxxx: {
+          //     __typename: 'Xxxx',
           //     id: null,
           //     title: title,
           //     content: content,
-          //     comments: []
+          //     descriptions: []
           //   }
           // },
           updateQueries: {
-            posts: (prev, { mutationResult: { data: { addPost } } }) => {
-              return AddPost(prev, addPost);
+            xxxxs: (prev, { mutationResult: { data: { addXxxx } } }) => {
+              return AddXxxx(prev, addXxxx);
             }
           }
         });
 
         if (history) {
-          return history.push('/post/' + postData.data.addPost.id, {
-            post: postData.data.addPost
+          return history.push('/xxxx/' + xxxxData.data.addXxxx.id, {
+            xxxx: xxxxData.data.addXxxx
           });
         } else if (navigation) {
           return navigation.setParams({
-            id: postData.data.addPost.id,
-            post: postData.data.addPost
+            id: xxxxData.data.addXxxx.id,
+            xxxx: xxxxData.data.addXxxx
           });
         }
       }
     })
   }),
-  graphql(EDIT_POST, {
+  graphql(EDIT_XXXX, {
     props: ({ ownProps: { history, navigation }, mutate }) => ({
-      editPost: async (id, title, content) => {
+      editXxxx: async (id, title, content) => {
         await mutate({
           variables: { input: { id, title, content } }
         });
 
         if (history) {
-          return history.push('/posts');
+          return history.push('/xxxxs');
         }
         if (navigation) {
           return navigation.goBack();
@@ -128,4 +128,4 @@ export default compose(
       }
     })
   })
-)(PostEdit);
+)(XxxxEdit);

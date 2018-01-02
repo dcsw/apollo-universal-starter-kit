@@ -1,0 +1,11 @@
+#import "./Xxxx.graphql"
+#import "./Description.graphql"
+
+mutation addXxxx($input: AddXxxxInput!) {
+  addXxxx(input: $input) {
+    ...XxxxInfo
+    descriptions {
+      ...DescriptionInfo
+    }
+  }
+}

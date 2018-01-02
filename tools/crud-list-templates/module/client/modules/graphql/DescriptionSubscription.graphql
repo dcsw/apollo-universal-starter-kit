@@ -1,0 +1,12 @@
+#import "./Description.graphql"
+
+subscription onDescriptionUpdated($xxxxId: Int!) {
+  descriptionUpdated(xxxxId: $xxxxId) {
+    mutation
+    id
+    xxxxId
+    node {
+      ...DescriptionInfo
+    }
+  }
+}

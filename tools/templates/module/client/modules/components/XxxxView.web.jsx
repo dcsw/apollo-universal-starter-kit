@@ -4,25 +4,25 @@ import { PageLayout } from '../../common/components/web';
 
 const renderMetaData = () => (
   <Helmet
-    title="$Module$"
+    title="Xxxx"
     meta={[
       {
         name: 'description',
-        content: '$Module$ page'
+        content: 'Xxxx page'
       }
     ]}
   />
 );
 
-const $Module$View = () => {
+const XxxxView = () => {
   return (
     <PageLayout>
       {renderMetaData()}
       <div className="text-center mt-4 mb-4">
-        <p>Hello $Module$!</p>
+        <p>Hello Xxxx!</p>
       </div>
     </PageLayout>
   );
 };
 
-export default $Module$View;
+export default XxxxView;

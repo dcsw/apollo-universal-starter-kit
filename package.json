@@ -201,7 +201,7 @@
     "openurl": "^1.1.1",
     "persistgraphql-webpack-plugin": "^0.4.4",
     "postcss-loader": "^2.0.9",
-    "prettier": "^1.9.0",
+    "prettier": "1.9.0",
     "qrcode-terminal": "^0.11.0",
     "raw-loader": "^0.5.1",
     "react-addons-test-utils": "^16.0.0-alpha.3",

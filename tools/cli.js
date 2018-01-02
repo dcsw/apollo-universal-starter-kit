@@ -12,6 +12,15 @@ prog
     'both'
   )
   .action((args, options, logger) => moduleCmd('addmodule', args, options, logger))
+  .command('add-crud-list-module', 'Create a new CRUD Module with list support')
+  .argument('<module>', 'Module name')
+  .argument(
+    '[location]',
+    'Where should new module be created. [both, server, client]',
+    ['both', 'server', 'client'],
+    'both'
+  )
+  .action((args, options, logger) => moduleCmd('add-crud-list-module', args, options, logger))
   .command('deletemodule', 'Delete a Module')
   .argument('<module>', 'Module name')
   .argument(

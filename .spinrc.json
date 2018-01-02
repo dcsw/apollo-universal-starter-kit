@@ -7,7 +7,7 @@
     "web": {
       "stack": ["react-native-web", "web"],
       "openBrowser": true,
-      "enabled": true
+      "enabled": false
     },
     "android": {
       "stack": ["react-native", "android"],
@@ -15,7 +15,7 @@
     },
     "ios": {
       "stack": ["react-native", "ios"],
-      "enabled": false
+      "enabled": true
     },
     "test": {
       "stack": ["react-native-web", "server"],
