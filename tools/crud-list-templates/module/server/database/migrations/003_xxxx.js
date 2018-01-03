@@ -7,20 +7,9 @@ exports.up = function(knex, Promise) {
         table.string('content');
         table.timestamps(false, true);
       })
-      .createTable('description', table => {
-        table.increments();
-        table
-          .integer('xxxx_id')
-          .unsigned()
-          .references('id')
-          .inTable('xxxx')
-          .onDelete('CASCADE');
-        table.string('content');
-        table.timestamps(false, true);
-      })
   ]);
 };
 
 exports.down = function(knex, Promise) {
-  return Promise.all([knex.schema.dropTable('description'), knex.schema.dropTable('xxxx')]);
+  return Promise.all([knex.schema.dropTable('xxxx')]);
 };

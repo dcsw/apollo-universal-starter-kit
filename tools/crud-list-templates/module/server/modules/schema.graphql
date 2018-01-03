@@ -3,13 +3,6 @@ type Xxxx {
   id: Int!
   title: String!
   content: String!
-  descriptions: [Description]
-}
-
-# Description
-type Description {
-  id: Int!
-  content: String!
 }
 
 # Edges for Xxxxs
@@ -45,12 +38,6 @@ extend type Mutation {
   deleteXxxx(id: Int!): Xxxx
   # Edit a xxxx
   editXxxx(input: EditXxxxInput!): Xxxx
-  # Add description to xxxx
-  addDescription(input: AddDescriptionInput!): Description
-  # Delete a description
-  deleteDescription(input: DeleteDescriptionInput!): Description
-  # Edit a description
-  editDescription(input: EditDescriptionInput!): Description
 }
 
 # Input for addXxxx Mutation
@@ -66,35 +53,11 @@ input EditXxxxInput {
   content: String!
 }
 
-# Input for addDescription Mutation
-input AddDescriptionInput {
-  content: String!
-  # Needed for descriptionUpdated Subscription filter
-  xxxxId: Int!
-}
-
-# Input for editDescription Mutation
-input DeleteDescriptionInput {
-  id: Int!
-  # Needed for descriptionUpdated Subscription filter
-  xxxxId: Int!
-}
-
-# Input for deleteDescription Mutation
-input EditDescriptionInput {
-  id: Int!
-  content: String!
-  # Needed for descriptionUpdated Subscription filter
-  xxxxId: Int!
-}
-
 extend type Subscription {
   # Subscription for when editing a xxxx
   xxxxUpdated(id: Int!): Xxxx
   # Subscription for xxxx list
   xxxxsUpdated(endCursor: Int!): UpdateXxxxPayload
-  # Subscription for descriptions
-  descriptionUpdated(xxxxId: Int!): UpdateDescriptionPayload
 }
 
 # Payload for xxxxsUpdated Subscription
@@ -102,12 +65,4 @@ type UpdateXxxxPayload {
   mutation: String!
   id: Int!
   node: Xxxx
-}
-
-# Payload for descriptionUpdated Subscription
-type UpdateDescriptionPayload {
-  mutation: String!
-  id: Int
-  xxxxId: Int!
-  node: Description
 }

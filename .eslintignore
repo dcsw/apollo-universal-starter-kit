@@ -1,3 +1,4 @@
 flow-typed/*
 tools/templates/*
 tools/crud-list-templates
+tools/linked-crud-list-templates

@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 
 import { PageLayout } from '../../common/components/web';
 import XxxxForm from './XxxxForm';
-import XxxxDescriptions from '../containers/XxxxDescriptions';
 import settings from '../../../../../settings';
 
 const onSubmit = (xxxx, addXxxx, editXxxx) => values => {
@@ -52,14 +51,6 @@ const XxxxEditView = ({ loading, xxxx, match, location, subscribeToMore, addXxxx
         </Link>
         <h2>{xxxx ? 'Edit' : 'Create'} Xxxx</h2>
         <XxxxForm onSubmit={onSubmit(xxxxObj, addXxxx, editXxxx)} initialValues={xxxxObj} />
-        <br />
-        {xxxxObj && (
-          <XxxxDescriptions
-            xxxxId={Number(match.params.id)}
-            descriptions={xxxxObj.descriptions}
-            subscribeToMore={subscribeToMore}
-          />
-        )}
       </PageLayout>
     );
   }

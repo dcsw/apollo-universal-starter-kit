@@ -88,9 +88,7 @@ export default compose(
           //     __typename: 'Xxxx',
           //     id: null,
           //     title: title,
-          //     content: content,
-          //     descriptions: []
-          //   }
+          //     content: content
           // },
           updateQueries: {
             xxxxs: (prev, { mutationResult: { data: { addXxxx } } }) => {

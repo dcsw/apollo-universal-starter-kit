@@ -16,15 +16,6 @@ export default class Xxxx {
       .limit(limit);
   }
 
-  async getDescriptionsForXxxxIds(xxxxIds) {
-    let res = await knex
-      .select('id', 'content', 'xxxx_id AS xxxxId')
-      .from('description')
-      .whereIn('xxxx_id', xxxxIds);
-
-    return orderedFor(res, xxxxIds, 'xxxxId', false);
-  }
-
   getTotal() {
     return knex('xxxx')
       .countDistinct('id as count')
@@ -63,34 +54,6 @@ export default class Xxxx {
       .where('id', '=', id)
       .update({
         title: title,
-        content: content
-      });
-  }
-
-  addDescription({ content, xxxxId }) {
-    return knex('description')
-      .insert({ content, xxxx_id: xxxxId })
-      .returning('id');
-  }
-
-  getDescription(id) {
-    return knex
-      .select('id', 'content')
-      .from('description')
-      .where('id', '=', id)
-      .first();
-  }
-
-  deleteDescription(id) {
-    return knex('description')
-      .where('id', '=', id)
-      .del();
-  }
-
-  editDescription({ id, content }) {
-    return knex('description')
-      .where('id', '=', id)
-      .update({
         content: content
       });
   }

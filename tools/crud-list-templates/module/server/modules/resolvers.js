@@ -2,7 +2,6 @@ import { withFilter } from 'graphql-subscriptions';
 
 const XXXX_SUBSCRIPTION = 'xxxx_subscription';
 const XXXXS_SUBSCRIPTION = 'xxxxs_subscription';
-const DESCRIPTION_SUBSCRIPTION = 'description_subscription';
 
 export default pubsub => ({
   Query: {
@@ -36,11 +35,6 @@ export default pubsub => ({
     },
     xxxx(obj, { id }, context) {
       return context.Xxxx.xxxx(id);
-    }
-  },
-  Xxxx: {
-    descriptions({ id }, args, context) {
-      return context.loaders.getDescriptionsForXxxxIds.load(id);
     }
   },
   Mutation: {
@@ -89,47 +83,6 @@ export default pubsub => ({
       pubsub.publish(XXXX_SUBSCRIPTION, { xxxxUpdated: xxxx });
       return xxxx;
     },
-    async addDescription(obj, { input }, context) {
-      const [id] = await context.Xxxx.addDescription(input);
-      const description = await context.Xxxx.getDescription(id);
-      // publish for edit xxxx page
-      pubsub.publish(DESCRIPTION_SUBSCRIPTION, {
-        descriptionUpdated: {
-          mutation: 'CREATED',
-          id: description.id,
-          xxxxId: input.xxxxId,
-          node: description
-        }
-      });
-      return description;
-    },
-    async deleteDescription(obj, { input: { id, xxxxId } }, context) {
-      await context.Xxxx.deleteDescription(id);
-      // publish for edit xxxx page
-      pubsub.publish(DESCRIPTION_SUBSCRIPTION, {
-        descriptionUpdated: {
-          mutation: 'DELETED',
-          id,
-          xxxxId,
-          node: null
-        }
-      });
-      return { id };
-    },
-    async editDescription(obj, { input }, context) {
-      await context.Xxxx.editDescription(input);
-      const description = await context.Xxxx.getDescription(input.id);
-      // publish for edit xxxx page
-      pubsub.publish(DESCRIPTION_SUBSCRIPTION, {
-        descriptionUpdated: {
-          mutation: 'UPDATED',
-          id: input.id,
-          xxxxId: input.xxxxId,
-          node: description
-        }
-      });
-      return description;
-    }
   },
   Subscription: {
     xxxxUpdated: {
@@ -148,13 +101,5 @@ export default pubsub => ({
         }
       )
     },
-    descriptionUpdated: {
-      subscribe: withFilter(
-        () => pubsub.asyncIterator(DESCRIPTION_SUBSCRIPTION),
-        (payload, variables) => {
-          return payload.descriptionUpdated.xxxxId === variables.xxxxId;
-        }
-      )
-    }
   }
 });

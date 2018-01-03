@@ -5,23 +5,16 @@ import _ from 'lodash';
 import Renderer from '../../../../client/testHelpers/Renderer';
 import XXXXS_SUBSCRIPTION from '../graphql/XxxxsSubscription.graphql';
 import XXXX_SUBSCRIPTION from '../graphql/XxxxSubscription.graphql';
-import DESCRIPTION_SUBSCRIPTION from '../graphql/DescriptionSubscription.graphql';
 
 const createNode = id => ({
   id: `${id}`,
   title: `Xxxx title ${id}`,
   content: `Xxxx content ${id}`,
-  descriptions: [
-    { id: id * 1000 + 1, content: 'Xxxx description 1', __typename: 'Description' },
-    { id: id * 1000 + 2, content: 'Xxxx description 2', __typename: 'Description' }
-  ],
   __typename: 'Xxxx'
 });
 
 const mutations = {
   editXxxx: true,
-  addDescription: true,
-  editDescription: true
 };
 
 const mocks = {
@@ -53,12 +46,11 @@ const mocks = {
   }),
   Mutation: () => ({
     deleteXxxx: (obj, { id }) => createNode(id),
-    deleteDescription: (obj, { input }) => input,
     ...mutations
   })
 };
 
-describe('Xxxxs and descriptions example UI works', () => {
+describe('Xxxxs example UI works', () => {
   const renderer = new Renderer(mocks, {});
   let app;
   let content;
@@ -251,108 +243,6 @@ describe('Xxxxs and descriptions example UI works', () => {
         .instance().value
     ).to.equal('Xxxx content 33');
     expect(content.text()).to.include('Edit Xxxx');
-  });
-
-  step('Description adding works', done => {
-    mutations.addDescription = (obj, { input }) => {
-      expect(input.xxxxId).to.equal(3);
-      expect(input.content).to.equal('Xxxx description 24');
-      done();
-      return input;
-    };
-
-    const descriptionForm = content.find('form[name="description"]');
-    descriptionForm
-      .find('[name="content"]')
-      .last()
-      .simulate('change', { target: { value: 'Xxxx description 24' } });
-    descriptionForm.last().simulate('submit');
-    expect(content.text()).to.include('Xxxx description 24');
-  });
-
-  step('Updates description form on description added got from subscription', () => {
-    const subscription = renderer.getSubscriptions(DESCRIPTION_SUBSCRIPTION)[0];
-    subscription.next({
-      data: {
-        descriptionUpdated: {
-          mutation: 'CREATED',
-          id: 3003,
-          xxxxId: 3,
-          node: {
-            id: 3003,
-            content: 'Xxxx description 3',
-            __typename: 'Description'
-          },
-          __typename: 'UpdateDescriptionPayload'
-        }
-      }
-    });
-
-    expect(content.text()).to.include('Xxxx description 3');
-  });
-
-  step('Updates description form on description deleted got from subscription', () => {
-    const subscription = renderer.getSubscriptions(DESCRIPTION_SUBSCRIPTION)[0];
-    subscription.next({
-      data: {
-        descriptionUpdated: {
-          mutation: 'DELETED',
-          id: 3003,
-          xxxxId: 3,
-          node: {
-            id: 3003,
-            content: 'Xxxx description 3',
-            __typename: 'Description'
-          },
-          __typename: 'UpdateDescriptionPayload'
-        }
-      }
-    });
-    expect(content.text()).to.not.include('Xxxx description 3');
-  });
-
-  step('Description deleting optimistically removes description', () => {
-    const deleteButtons = content.find('.delete-description');
-    expect(deleteButtons).has.lengthOf(9);
-    deleteButtons.last().simulate('click');
-
-    app.update();
-    content = app.find('#content').last();
-    expect(content.text()).to.not.include('Xxxx description 24');
-    expect(content.find('.delete-description')).has.lengthOf(6);
-  });
-
-  step('Clicking description delete removes the description', () => {
-    expect(content.text()).to.not.include('Xxxx description 24');
-    expect(content.find('.delete-description')).has.lengthOf(6);
-  });
-
-  step('Description editing works', done => {
-    mutations.editDescription = (obj, { input }) => {
-      expect(input.xxxxId).to.equal(3);
-      expect(input.content).to.equal('Edited description 2');
-      done();
-      return input;
-    };
-
-    const editButtons = content.find('.edit-description');
-    expect(editButtons).has.lengthOf(6);
-    editButtons.last().simulate('click');
-
-    const descriptionForm = content.find('form[name="description"]');
-    expect(
-      descriptionForm
-        .find('[name="content"]')
-        .last()
-        .instance().value
-    ).to.equal('Xxxx description 2');
-    descriptionForm
-      .find('[name="content"]')
-      .last()
-      .simulate('change', { target: { value: 'Edited description 2' } });
-    descriptionForm.last().simulate('submit');
-
-    expect(content.text()).to.include('Edited description 2');
   });
 
   step('Clicking back button takes to xxxx list', () => {

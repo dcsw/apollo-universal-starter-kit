@@ -9,7 +9,7 @@ import EDIT_XXXX from '../../../client/modules/xxxx/graphql/EditXxxx.graphql';
 import DELETE_XXXX from '../../../client/modules/xxxx/graphql/DeleteXxxx.graphql';
 import XXXXS_SUBSCRIPTION from '../../../client/modules/xxxx/graphql/XxxxsSubscription.graphql';
 
-describe('Xxxx and descriptions example API works', () => {
+describe('Xxxx example API works', () => {
   let apollo;
 
   before(() => {
@@ -47,7 +47,7 @@ describe('Xxxx and descriptions example API works', () => {
     });
   });
 
-  step('Query single xxxx with descriptions works', async () => {
+  step('Query single xxxx works', async () => {
     let result = await apollo.query({ query: XXXX_QUERY, variables: { id: 1 } });
 
     expect(result.data).to.deep.equal({
@@ -56,18 +56,6 @@ describe('Xxxx and descriptions example API works', () => {
         title: 'Xxxx title 1',
         content: 'Xxxx content 1',
         __typename: 'Xxxx',
-        descriptions: [
-          {
-            id: 1,
-            content: 'Description title 1 for xxxx 1',
-            __typename: 'Description'
-          },
-          {
-            id: 2,
-            content: 'Description title 2 for xxxx 1',
-            __typename: 'Description'
-          }
-        ]
       }
     });
   });

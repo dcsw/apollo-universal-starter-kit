@@ -1,7 +1,0 @@
-#import "./Description.graphql"
-
-mutation editDescription($input: EditDescriptionInput!) {
-  editDescription(input: $input) {
-    ...DescriptionInfo
-  }
-}

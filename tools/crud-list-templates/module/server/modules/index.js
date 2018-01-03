@@ -15,7 +15,6 @@ export default new Feature({
     return {
       Xxxx: xxxx,
       loaders: {
-        getDescriptionsForXxxxIds: new DataLoader(xxxx.getDescriptionsForXxxxIds)
       }
     };
   }

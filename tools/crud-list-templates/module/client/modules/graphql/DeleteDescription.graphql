@@ -1,5 +1,0 @@
-mutation deleteDescription($input: DeleteDescriptionInput!) {
-  deleteDescription(input: $input) {
-    id
-  }
-}

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { StyleSheet, Text, View } from 'react-native';
 
 import XxxxForm from './XxxxForm';
-import XxxxDescriptions from '../containers/XxxxDescriptions';
 
 const onSubmit = (xxxx, addXxxx, editXxxx) => values => {
   if (xxxx) {
@@ -31,13 +30,6 @@ const XxxxEditView = ({ loading, xxxx, navigation, subscribeToMore, addXxxx, edi
     return (
       <View style={styles.container}>
         <XxxxForm onSubmit={onSubmit(xxxxObj, addXxxx, editXxxx)} initialValues={xxxxObj ? xxxxObj : {}} />
-        {xxxxObj && (
-          <XxxxDescriptions
-            xxxxId={navigation.state.params.id}
-            descriptions={xxxxObj.descriptions}
-            subscribeToMore={subscribeToMore}
-          />
-        )}
       </View>
     );
   }
