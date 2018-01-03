@@ -1,0 +1,11 @@
+#import "./Xxxx.graphql"
+#import "./Yyyy.graphql"
+
+query xxxx($id: Int!) {
+  xxxx(id: $id) {
+    ...XxxxInfo
+    yyyys {
+      ...YyyyInfo
+    }
+  }
+}

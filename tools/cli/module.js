@@ -12,7 +12,7 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-function copyRenameFiles(logger, moduleName, location, files, destinationPath) {
+function copyRenameFiles(logger, moduleName, linkedEntityName = '', location, files, destinationPath) {
   shell.cp('-R', files, destinationPath);
   logger.info(`✔ The ${location} files have been copied!`);
 
@@ -32,6 +32,22 @@ function copyRenameFiles(logger, moduleName, location, files, destinationPath) {
       });
     }
   });
+  console.log('vvvvvv');
+  console.log(linkedEntityName);
+  shell.ls('-Rl', destinationPath).forEach(entry => {
+    if (entry.isFile()) {
+      [
+        { name: 'yyyy', newName: linkedEntityName },
+        { name: 'Yyyy', newName: linkedEntityName.capitalize() },
+        { name: 'YYYY', newName: linkedEntityName.toUpperCase() }
+      ].forEach(e => {
+        if (entry.name.indexOf(e.name) >= 0) {
+          const moduleFile = entry.name.replace(e.name, e.newName);
+          shell.mv(`${destinationPath}/${entry.name}`, `${destinationPath}/${moduleFile}`);
+        }
+      });
+    }
+  });
 
   // replace module names
   shell.ls('-Rl', destinationPath).forEach(entry => {
@@ -39,11 +55,14 @@ function copyRenameFiles(logger, moduleName, location, files, destinationPath) {
       shell.sed('-i', /xxxx/g, moduleName, `${destinationPath}/${entry.name}`);
       shell.sed('-i', /XXXX/g, moduleName.toUpperCase(), `${destinationPath}/${entry.name}`);
       shell.sed('-i', /Xxxx/g, moduleName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /yyyy/g, linkedEntityName, `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /YYYY/g, linkedEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
     }
   });
 }
 
-function copyFiles(logger, templatePath, module, location) {
+function copyFiles(logger, templatePath, module, linkedEntityName = '', location) {
   logger.info(`Copying ${location} files…`);
 
   // create new module directory
@@ -52,7 +71,7 @@ function copyFiles(logger, templatePath, module, location) {
   // continue only if directory does not yet exist
   if (mkdir.code === 0) {
     const destinationPath = `${__dirname}/../../src/${location}/${module}`;
-    copyRenameFiles(logger, module, location, `${templatePath}/${location}/*`, destinationPath);
+    copyRenameFiles(logger, module, linkedEntityName, location, `${templatePath}/${location}/*`, destinationPath);
 
     // get module input data
     const path = `${__dirname}/../../src/${location}/index.js`;
@@ -120,6 +139,9 @@ module.exports = (action, args, options, logger) => {
     case 'add-crud-list-module':
       templatePath = `${__dirname}/../crud-list-templates/module`;
       break;
+    case 'add-linked-crud-list-module':
+      templatePath = `${__dirname}/../linked-crud-list-templates/module`;
+      break;
     default:
       templatePath = `${__dirname}/../templates/module`;
       break;
@@ -130,12 +152,16 @@ module.exports = (action, args, options, logger) => {
     process.exit(1);
   }
 
+  console.log('xxxxxx');
+  console.log(args.linkedEntityName);
+
   // client
   if (args.location === 'client' || args.location === 'both') {
     switch (action) {
       case 'addmodule':
       case 'add-crud-list-module':
-        copyFiles(logger, templatePath, args.module, 'client/modules');
+      case 'add-linked-crud-list-module':
+        copyFiles(logger, templatePath, args.module, args.linkedEntityName, 'client/modules');
         break;
       case 'deletemodule':
         deleteFiles(logger, templatePath, args.module, 'client/modules');
@@ -148,11 +174,13 @@ module.exports = (action, args, options, logger) => {
     switch (action) {
       case 'addmodule':
       case 'add-crud-list-module':
-        copyFiles(logger, templatePath, args.module, 'server/modules');
+      case 'add-linked-crud-list-module':
+        copyFiles(logger, templatePath, args.module, args.linkedEntityName, 'server/modules');
         if (fs.existsSync(`${templatePath}/server/database`)) {
           copyRenameFiles(
             logger,
             args.module,
+            args.linkedEntityName,
             'server/database',
             `${templatePath}/server/database/*`,
             `${__dirname}/../../src/server/database`
