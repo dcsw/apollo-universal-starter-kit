@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
         table.string('content');
         table.timestamps(false, true);
       })
-      .createTable('yyyy', table => {
+      .createTableIfNotExists('yyyy', table => {
         table.increments();
         table
           .integer('xxxx_id')

@@ -5,7 +5,7 @@ export async function seed(knex, Promise) {
 
   await Promise.all(
     [...Array(20).keys()].map(async ii => {
-      const post = await knex('xxxx')
+      const xxxx = await knex('xxxx')
         .returning('id')
         .insert({
           title: `Xxxx title ${ii + 1}`,

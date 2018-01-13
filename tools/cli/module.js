@@ -32,7 +32,6 @@ function copyRenameFiles(logger, moduleName, linkedEntityName = '', location, fi
       });
     }
   });
-  console.log('vvvvvv');
   console.log(linkedEntityName);
   shell.ls('-Rl', destinationPath).forEach(entry => {
     if (entry.isFile()) {
@@ -49,7 +48,7 @@ function copyRenameFiles(logger, moduleName, linkedEntityName = '', location, fi
     }
   });
 
-  // replace module names
+  // replace module names in files
   shell.ls('-Rl', destinationPath).forEach(entry => {
     if (entry.isFile()) {
       shell.sed('-i', /xxxx/g, moduleName, `${destinationPath}/${entry.name}`);
@@ -60,6 +59,8 @@ function copyRenameFiles(logger, moduleName, linkedEntityName = '', location, fi
       shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
     }
   });
+
+  // add back-references for Xxxx to Yyyy, if Yyyy already exists....
 }
 
 function copyFiles(logger, templatePath, module, linkedEntityName = '', location) {

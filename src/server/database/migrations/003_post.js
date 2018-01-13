@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
         table.string('content');
         table.timestamps(false, true);
       })
-      .createTable('comment', table => {
+      .createTableIfNotExists('comment', table => {
         table.increments();
         table
           .integer('post_id')
