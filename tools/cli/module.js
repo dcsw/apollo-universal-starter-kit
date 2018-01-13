@@ -188,6 +188,8 @@ module.exports = (action, args, options, logger) => {
           );
         }
         break;
+      case 'link-modules':
+        break;
       case 'deletemodule':
         deleteFiles(logger, templatePath, args.module, 'server/modules');
         [`${__dirname}/../../src/server/database/migrations`, `${__dirname}/../../src/server/database/seeds`].forEach(
