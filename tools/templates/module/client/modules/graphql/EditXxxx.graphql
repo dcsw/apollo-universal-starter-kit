@@ -1,0 +1,7 @@
+#import "./Xxxx.graphql"
+
+mutation editXxxx($input: EditXxxxInput!) {
+    editXxxx(input: $input) {
+        ...XxxxInfo
+    }
+}

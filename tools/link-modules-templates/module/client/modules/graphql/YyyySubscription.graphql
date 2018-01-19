@@ -1,0 +1,12 @@
+#import "./Yyyy.graphql"
+
+subscription onYyyyUpdated($xxxxId: Int!) {
+    yyyyUpdated(xxxxId: $xxxxId) {
+        mutation
+        id
+        xxxxId
+        node {
+            ...YyyyInfo
+        }
+    }
+}

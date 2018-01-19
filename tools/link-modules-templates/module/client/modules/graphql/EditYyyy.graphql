@@ -1,0 +1,7 @@
+#import "./Yyyy.graphql"
+
+mutation editYyyy($input: EditYyyyInput!) {
+    editYyyy(input: $input) {
+        ...YyyyInfo
+    }
+}

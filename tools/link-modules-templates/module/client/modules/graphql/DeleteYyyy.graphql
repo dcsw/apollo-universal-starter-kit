@@ -1,0 +1,5 @@
+mutation deleteYyyy($input: DeleteYyyyInput!) {
+    deleteYyyy(input: $input) {
+        id
+    }
+}

@@ -36,13 +36,8 @@ prog
 
   .command('link-modules', 'Link 2 existing modules')
   .argument('<module>', 'Module name')
-  .argument('<linkedEntityName>', 'Name of the linked entity to add')
-  .argument(
-    '[location]',
-    'Where should new module be created. [both, server, client]',
-    ['both', 'server', 'client'],
-    'both'
-  )
+  .argument('<srcEntityName>', 'Name of the main source entity to link')
+  .argument('<linkedEntityName>', 'Name of the linked entity to link')
   .action((args, options, logger) => moduleCmd('link-modules', args, options, logger))
 
   .command('deletemodule', 'Delete a Module')

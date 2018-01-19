@@ -1,0 +1,17 @@
+#import "./Xxxx.graphql"
+# START-LINKED-MODULE-TEMPLATE-0
+##import "./Yyyy.graphql"
+# END-LINKED-MODULE-TEMPLATE-0
+# TARGET-LINKED-MODULE-TEMPLATE-0
+
+mutation addXxxx($input: AddXxxxInput!) {
+    addXxxx(input: $input) {
+        ...XxxxInfo
+        # START-LINKED-MODULE-TEMPLATE-1
+        # yyyys {
+        #   ...YyyyInfo
+        # }
+        # END-LINKED-MODULE-TEMPLATE-1
+        # TARGET-LINKED-MODULE-TEMPLATE-1
+    }
+}
