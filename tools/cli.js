@@ -35,9 +35,14 @@ prog
   .action((args, options, logger) => moduleCmd('add-linked-crud-list-module', args, options, logger))
 
   .command('link-modules', 'Link 2 existing modules')
-  .argument('<module>', 'Module name')
   .argument('<srcEntityName>', 'Name of the main source entity to link')
   .argument('<linkedEntityName>', 'Name of the linked entity to link')
+  .argument(
+    '[location]',
+    'Where should new module be created. [both, server, client]',
+    ['both', 'server', 'client'],
+    'both'
+  )
   .action((args, options, logger) => moduleCmd('link-modules', args, options, logger))
 
   .command('deletemodule', 'Delete a Module')

@@ -100,8 +100,9 @@ function templateAlterFiles(logger, moduleName, srcEntityName, linkedEntityName,
 
   // change to destination directory & template-substitute values
   shell.ls('-Rl', path.join(destinationPath, srcEntityName)).forEach(entry => {
+    let filePath = path.join(destinationPath, srcEntityName, entry.name);
     if (entry.isFile()) {
-      let contents = fs.readFileSync(entry.name).toString();
+      let contents = fs.readFileSync(filePath).toString();
       let templates = {};
       let templateId = '';
       contents.split('\n').forEach(l => {
@@ -115,7 +116,7 @@ function templateAlterFiles(logger, moduleName, srcEntityName, linkedEntityName,
             if (templateId) {
               if (!templates[templateId]) templates[templateId] = '';
               let m = l.match(/^(.*)(\/\/\s|#)(.*)/);
-              templates[templateId] += `${m[1]}${m[3]}\n`;
+              if (m) templates[templateId] += `${m[1]}${m[3]}\n`;
             }
           }
         }
@@ -130,7 +131,8 @@ function templateAlterFiles(logger, moduleName, srcEntityName, linkedEntityName,
           contentOut += `${templates[matchTemplateTarget[2]]}\n`;
         }
       });
-      fs.writeFileSync(entry.name, contentOut);
+
+      fs.writeFileSync(filePath, contentOut);
     }
   });
 
@@ -189,17 +191,19 @@ function deleteFiles(logger, templatePath, module, location) {
     // extract Feature modules
     const re = /Feature\(([^()]+)\)/g;
     const match = re.exec(data);
-    const modules = match[1].split(',').filter(featureModule => featureModule.trim() !== module);
+    if (match) {
+      const modules = match[1].split(',').filter(featureModule => featureModule.trim() !== module);
 
-    // remove import module line
-    const lines = data
-      .toString()
-      .split('\n')
-      .filter(line => line.match(`import ${module} from './${module}';`) === null);
-    fs.writeFileSync(path, lines.join('\n'));
+      // remove import module line
+      const lines = data
+        .toString()
+        .split('\n')
+        .filter(line => line.match(`import ${module} from './${module}';`) === null);
+      fs.writeFileSync(path, lines.join('\n'));
 
-    // remove module from Feature function
-    shell.sed('-i', re, `Feature(${modules.toString().trim()})`, 'index.js');
+      // remove module from Feature function
+      shell.sed('-i', re, `Feature(${modules.toString().trim()})`, 'index.js');
+    }
 
     // continue only if directory does not jet exist
     logger.info(`✔ Module for ${location} successfully deleted!`);
