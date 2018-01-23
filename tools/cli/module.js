@@ -65,8 +65,9 @@ function copyRenameFiles(logger, moduleName, /* linkedEntityName = '', */ locati
   // add back-references for Xxxx to Yyyy, if Yyyy already exists....
 }
 
-function templateAlterFiles(logger, moduleName, srcEntityName, linkedEntityName, location, files, destinationPath) {
+function templateAlterFiles(logger, moduleName, srcEntityName, linkedEntityName, location, files, destPath) {
   // copy files
+  let destinationPath = path.join(destPath, srcEntityName);
   shell.cp('-R', files, destinationPath);
   logger.info(`✔ The ${location} files have been copied!`);
 
