@@ -65,7 +65,12 @@ function copyRenameFiles(logger, moduleName, /* linkedEntityName = '', */ /* loc
   // add back-references for Xxxx to Yyyy, if Yyyy already exists....
 }
 
-function templateAlterFiles(logger, moduleName, srcEntityName, linkedEntityName, location, files, destinationPath) {
+function templateAlterFiles(
+  logger,
+  /*moduleName, */ srcEntityName,
+  linkedEntityName,
+  /*location, files,*/ destinationPath
+) {
   // copy files
   // let destinationPath = path.join(destPath, srcEntityName);
   // shell.cp('-R', files, destinationPath);
@@ -285,20 +290,20 @@ module.exports = (action, args, options, logger) => {
         // if (fs.existsSync(`${templatePath}/server/modules`)) {
         templateAlterFiles(
           logger,
-          args.module,
+          // args.module,
           args.srcEntityName,
           args.linkedEntityName,
-          'server/database',
-          path.join(templatePath, 'server/modules/*'),
+          // 'server/database',
+          // path.join(templatePath, 'server/modules/*'),
           path.join(__dirname, '../../src/server/modules')
         );
         templateAlterFiles(
           logger,
-          args.module,
+          // args.module,
           args.srcEntityName,
           args.linkedEntityName,
-          'server/database',
-          path.join(templatePath, 'client/modules/*'),
+          // 'server/database',
+          // path.join(templatePath, 'client/modules/*'),
           path.join(__dirname, '../../src/client/modules')
         );
         // }
