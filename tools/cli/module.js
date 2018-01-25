@@ -268,17 +268,21 @@ module.exports = (action, args, options, logger) => {
         // Add links to server module
         copyRenameFiles(
           logger,
-          path.join(templatePath, 'server/modules'),
           args.module,
-          /* args.linkedEntityName, */ 'server/modules'
+          /* args.linkedEntityName, */
+          'server/database',
+          path.join(templatePath, 'server/modules/*'),
+          path.join(__dirname, '../../src/server/modules')
         );
 
         // Add files to client module
         copyRenameFiles(
           logger,
-          path.join(templatePath, 'client/modules'),
           args.module,
-          /* args.linkedEntityName, */ 'client/modules'
+          /* args.linkedEntityName, */
+          'server/database',
+          path.join(templatePath, 'client/modules/*'),
+          path.join(__dirname, '../../src/client/modules')
         );
 
         // Alter client GUI to include linked modules
