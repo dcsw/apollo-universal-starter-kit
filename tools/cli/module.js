@@ -13,10 +13,10 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-function copyRenameFiles(logger, moduleName, /* linkedEntityName = '', */ location, files, destinationPath) {
+function copyRenameFiles(logger, moduleName, /* linkedEntityName = '', */ /* location, */ files, destinationPath) {
   // copy files
   shell.cp('-R', files, destinationPath);
-  logger.info(`✔ The ${location} files have been copied!`);
+  logger.info(`✔ The ${files} files have been copied to ${destinationPath}!`);
 
   // change to destination directory & rename files & module names
   // rename files
@@ -65,11 +65,11 @@ function copyRenameFiles(logger, moduleName, /* linkedEntityName = '', */ locati
   // add back-references for Xxxx to Yyyy, if Yyyy already exists....
 }
 
-function templateAlterFiles(logger, moduleName, srcEntityName, linkedEntityName, location, files, destPath) {
+function templateAlterFiles(logger, moduleName, srcEntityName, linkedEntityName, location, files, destinationPath) {
   // copy files
-  let destinationPath = path.join(destPath, srcEntityName);
-  shell.cp('-R', files, destinationPath);
-  logger.info(`✔ The ${location} files have been copied!`);
+  // let destinationPath = path.join(destPath, srcEntityName);
+  // shell.cp('-R', files, destinationPath);
+  // logger.info(`✔ The ${location} files have been copied!`);
 
   // rename files
   shell.ls('-Rl', destinationPath).forEach(entry => {
@@ -149,7 +149,12 @@ function copyFiles(logger, templatePath, module, /* linkedEntityName = '', */ lo
   // continue only if directory does not yet exist
   if (mkdir.code === 0) {
     const destinationPath = `${__dirname}/../../src/${location}/${module}`;
-    copyRenameFiles(logger, module, /* linkedEntityName, */ location, `${templatePath}/${location}/*`, destinationPath);
+    copyRenameFiles(
+      logger,
+      module,
+      /* linkedEntityName, */ /* location, */ `${templatePath}/${location}/*`,
+      destinationPath
+    );
 
     // get module input data
     const path = `${__dirname}/../../src/${location}/index.js`;
@@ -252,35 +257,26 @@ module.exports = (action, args, options, logger) => {
       case 'addmodule':
       case 'add-crud-list-module':
       case 'add-linked-crud-list-module':
+        copyFiles(logger, templatePath, args.module, /* args.linkedEntityName, */ 'client/modules');
         copyFiles(logger, templatePath, args.module, /* args.linkedEntityName, */ 'server/modules');
         if (fs.existsSync(`${templatePath}/server/database`)) {
           copyRenameFiles(
             logger,
             args.module,
             /* args.linkedEntityName, */
-            'server/database',
+            // 'server/database',
             `${templatePath}/server/database/*`,
             `${__dirname}/../../src/server/database`
           );
         }
         break;
       case 'link-modules':
-        // Add links to server module
-        copyRenameFiles(
-          logger,
-          args.module,
-          /* args.linkedEntityName, */
-          'server/database',
-          path.join(templatePath, 'server/modules/*'),
-          path.join(__dirname, '../../src/server/modules')
-        );
-
         // Add files to client module
         copyRenameFiles(
           logger,
-          args.module,
+          args.srcEntityName,
           /* args.linkedEntityName, */
-          'server/database',
+          // 'server/database',
           path.join(templatePath, 'client/modules/*'),
           path.join(__dirname, '../../src/client/modules')
         );
