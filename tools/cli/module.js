@@ -92,18 +92,6 @@ function templateAlterFiles(
     }
   });
 
-  // // replace module names in files
-  // shell.ls('-Rl', destinationPath).forEach(entry => {
-  //   if (entry.isFile()) {
-  //     shell.sed('-i', /xxxx/g, moduleName, `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /XXXX/g, moduleName.toUpperCase(), `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /Xxxx/g, moduleName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /yyyy/g, linkedEntityName, `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /YYYY/g, linkedEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-  //   }
-  // });
-
   // change to destination directory & template-substitute values
   shell.ls('-Rl', path.join(destinationPath, srcEntityName)).forEach(entry => {
     let filePath = path.join(destinationPath, srcEntityName, entry.name);
@@ -131,14 +119,26 @@ function templateAlterFiles(
 
       let contentOut = '';
       contents.split('\n').forEach(l => {
-        let matchTemplateTarget = l.match(/(\/\/|#)\sTARGET-LINKED-MODULE-TEMPLATE-(.+)/);
         contentOut += `${l}\n`;
+        let matchTemplateTarget = l.match(/(\/\/|#)\sTARGET-LINKED-MODULE-TEMPLATE-(.+)/);
         if (matchTemplateTarget) {
           contentOut += `${templates[matchTemplateTarget[2]]}\n`;
         }
       });
 
       fs.writeFileSync(filePath, contentOut);
+    }
+  });
+
+  // replace module names in files
+  shell.ls('-Rl', destinationPath).forEach(entry => {
+    if (entry.isFile()) {
+      shell.sed('-i', /xxxx/g, srcEntityName, `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /XXXX/g, srcEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /Xxxx/g, srcEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /yyyy/g, linkedEntityName, `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /YYYY/g, linkedEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
+      shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
     }
   });
 
