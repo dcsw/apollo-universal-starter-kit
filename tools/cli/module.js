@@ -266,8 +266,20 @@ module.exports = (action, args, options, logger) => {
         break;
       case 'link-modules':
         // Add links to server module
+        copyRenameFiles(
+          logger,
+          path.join(templatePath, 'server/modules'),
+          args.module,
+          /* args.linkedEntityName, */ 'server/modules'
+        );
 
         // Add files to client module
+        copyRenameFiles(
+          logger,
+          path.join(templatePath, 'client/modules'),
+          args.module,
+          /* args.linkedEntityName, */ 'client/modules'
+        );
 
         // Alter client GUI to include linked modules
         // if (fs.existsSync(`${templatePath}/server/modules`)) {
@@ -277,8 +289,8 @@ module.exports = (action, args, options, logger) => {
           args.srcEntityName,
           args.linkedEntityName,
           'server/database',
-          `${templatePath}/server/modules/*`,
-          `${__dirname}/../../src/server/modules`
+          path.join(templatePath, 'server/modules/*'),
+          path.join(__dirname, '../../src/server/modules')
         );
         templateAlterFiles(
           logger,
@@ -286,8 +298,8 @@ module.exports = (action, args, options, logger) => {
           args.srcEntityName,
           args.linkedEntityName,
           'server/database',
-          `${templatePath}/client/modules/*`,
-          `${__dirname}/../../src/client/modules`
+          path.join(templatePath, 'client/modules/*'),
+          path.join(__dirname, '../../src/client/modules')
         );
         // }
         break;
