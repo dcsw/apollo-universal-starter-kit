@@ -10,11 +10,11 @@ type Xxxx {
 }
 
 # START-LINKED-MODULE-TEMPLATE-1
-## Yyyy
-#type Yyyy {
-#  id: Int!
-#  content: String!
-#}
+### Yyyy
+##type Yyyy {
+##  id: Int!
+##  content: String!
+##}
 # END-LINKED-MODULE-TEMPLATE-1
 # TARGET-LINKED-MODULE-TEMPLATE-1
 
