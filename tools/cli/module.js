@@ -13,7 +13,13 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-function copyRenameFiles(logger, moduleName, /* linkedEntityName = '', */ /* location, */ files, destinationPath) {
+function copyRenameFiles(
+  logger,
+  moduleName,
+  /* linkedEntityName = '', */ /* location, */ files,
+  destinationPath,
+  alter = true
+) {
   // copy files
   shell.cp('-R', files, destinationPath);
   logger.info(`✔ The ${files} files have been copied to ${destinationPath}!`);
@@ -39,16 +45,18 @@ function copyRenameFiles(logger, moduleName, /* linkedEntityName = '', */ /* loc
   });
 
   // replace module names in files
-  shell.ls('-Rl', destinationPath).forEach(entry => {
-    if (entry.isFile()) {
-      shell.sed('-i', /xxxx/g, moduleName, `${destinationPath}/${entry.name}`);
-      shell.sed('-i', /XXXX/g, moduleName.toUpperCase(), `${destinationPath}/${entry.name}`);
-      shell.sed('-i', /Xxxx/g, moduleName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-      // shell.sed('-i', /yyyy/g, linkedEntityName, `${destinationPath}/${entry.name}`);
-      // shell.sed('-i', /YYYY/g, linkedEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
-      // shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-    }
-  });
+  if (alter) {
+    shell.ls('-Rl', destinationPath).forEach(entry => {
+      if (entry.isFile()) {
+        shell.sed('-i', /xxxx/g, moduleName, `${destinationPath}/${entry.name}`);
+        shell.sed('-i', /XXXX/g, moduleName.toUpperCase(), `${destinationPath}/${entry.name}`);
+        shell.sed('-i', /Xxxx/g, moduleName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
+        // shell.sed('-i', /yyyy/g, linkedEntityName, `${destinationPath}/${entry.name}`);
+        // shell.sed('-i', /YYYY/g, linkedEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
+        // shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
+      }
+    });
+  }
 
   // add back-references for Xxxx to Yyyy, if Yyyy already exists....
 }
@@ -274,8 +282,15 @@ module.exports = (action, args, options, logger) => {
           /* args.linkedEntityName, */
           // 'server/database',
           path.join(templatePath, 'client/modules/*'),
-          path.join(__dirname, '../../src/client/modules', args.srcEntityName)
+          path.join(__dirname, '../../src/client/modules', args.srcEntityName),
+          false
         );
+        // copyFiles(
+        //   logger,
+        //   path.join(templatePath, 'client/modules/*'),
+        //   args.srcEntityName /* args.linkedEntityName, */,
+        //   path.join(__dirname, '../../src/client/modules', args.srcEntityName)
+        // );
 
         // Alter client GUI to include linked modules
         // if (fs.existsSync(`${templatePath}/server/modules`)) {
