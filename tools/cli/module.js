@@ -13,13 +13,7 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-function copyRenameFiles(
-  logger,
-  moduleName,
-  /* linkedEntityName = '', */ /* location, */ files,
-  destinationPath,
-  alter = true
-) {
+function copyRenameFiles(logger, moduleName, files, destinationPath, alter = true) {
   // copy files
   shell.cp('-R', files, destinationPath);
   logger.info(`✔ The ${files} files have been copied to ${destinationPath}!`);
@@ -32,9 +26,6 @@ function copyRenameFiles(
         { name: 'xxxx', newName: moduleName },
         { name: 'Xxxx', newName: moduleName.capitalize() },
         { name: 'XXXX', newName: moduleName.toUpperCase() }
-        //       { name: 'yyyy', newName: linkedEntityName },
-        //       { name: 'Yyyy', newName: linkedEntityName.capitalize() },
-        //       { name: 'YYYY', newName: linkedEntityName.toUpperCase() }
       ].forEach(e => {
         if (entry.name.indexOf(e.name) >= 0) {
           const moduleFile = entry.name.replace(e.name, e.newName);
@@ -51,27 +42,12 @@ function copyRenameFiles(
         shell.sed('-i', /xxxx/g, moduleName, `${destinationPath}/${entry.name}`);
         shell.sed('-i', /XXXX/g, moduleName.toUpperCase(), `${destinationPath}/${entry.name}`);
         shell.sed('-i', /Xxxx/g, moduleName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-        // shell.sed('-i', /yyyy/g, linkedEntityName, `${destinationPath}/${entry.name}`);
-        // shell.sed('-i', /YYYY/g, linkedEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
-        // shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
       }
     });
   }
-
-  // add back-references for Xxxx to Yyyy, if Yyyy already exists....
 }
 
-function templateAlterFiles(
-  logger,
-  /*moduleName, */ srcEntityName,
-  linkedEntityName,
-  /*location, files,*/ destinationPath
-) {
-  // copy files
-  // let destPath = path.join(destinationPath, srcEntityName);
-  // shell.cp('-R', files, destinationPath);
-  // logger.info(`✔ The ${location} files have been copied!`);
-
+function templateAlterFiles(logger, srcEntityName, linkedEntityName, destinationPath) {
   // template-substitute values
   shell.ls('-Rl', destinationPath).forEach(entry => {
     let filePath = path.join(destinationPath, entry.name);
@@ -125,23 +101,9 @@ function templateAlterFiles(
       });
     }
   });
-
-  // // replace module names in files
-  // shell.ls('-Rl', destinationPath).forEach(entry => {
-  //   if (entry.isFile()) {
-  //     shell.sed('-i', /xxxx/g, srcEntityName, `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /XXXX/g, srcEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /Xxxx/g, srcEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /yyyy/g, linkedEntityName, `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /YYYY/g, linkedEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
-  //     shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-  //   }
-  // });
-
-  // add back-references for Xxxx to Yyyy, if Yyyy already exists....
 }
 
-function copyFiles(logger, templatePath, module, /* linkedEntityName = '', */ location) {
+function copyFiles(logger, templatePath, module, location) {
   logger.info(`Copying ${location} files…`);
 
   // create new module directory
@@ -189,8 +151,6 @@ function deleteFiles(logger, templatePath, module, location) {
     shell.cd(`${__dirname}/../../src/${location}/`);
 
     // add module to Feature function
-    //let ok = shell.sed('-i', `import ${module} from '.\/${module}';`, '', 'index.js');
-
     // get module input data
     const path = `${__dirname}/../../src/${location}/index.js`;
     let data = fs.readFileSync(path);
@@ -247,7 +207,7 @@ module.exports = (action, args, options, logger) => {
       case 'addmodule':
       case 'add-crud-list-module':
       case 'add-linked-crud-list-module':
-        copyFiles(logger, templatePath, args.module, /* args.linkedEntityName, */ 'client/modules');
+        copyFiles(logger, templatePath, args.module, 'client/modules');
         break;
       case 'deletemodule':
         deleteFiles(logger, templatePath, args.module, 'client/modules');
@@ -261,14 +221,12 @@ module.exports = (action, args, options, logger) => {
       case 'addmodule':
       case 'add-crud-list-module':
       case 'add-linked-crud-list-module':
-        copyFiles(logger, templatePath, args.module, /* args.linkedEntityName, */ 'client/modules');
-        copyFiles(logger, templatePath, args.module, /* args.linkedEntityName, */ 'server/modules');
+        copyFiles(logger, templatePath, args.module, 'client/modules');
+        copyFiles(logger, templatePath, args.module, 'server/modules');
         if (fs.existsSync(`${templatePath}/server/database`)) {
           copyRenameFiles(
             logger,
             args.module,
-            /* args.linkedEntityName, */
-            // 'server/database',
             `${templatePath}/server/database/*`,
             `${__dirname}/../../src/server/database`
           );
@@ -279,8 +237,6 @@ module.exports = (action, args, options, logger) => {
         copyRenameFiles(
           logger,
           args.srcEntityName,
-          /* args.linkedEntityName, */
-          // 'server/database',
           path.join(templatePath, 'client/modules/*'),
           path.join(__dirname, '../../src/client/modules', args.srcEntityName),
           false
@@ -289,20 +245,14 @@ module.exports = (action, args, options, logger) => {
         // Alter client GUI to include linked modules
         templateAlterFiles(
           logger,
-          // args.module,
           args.srcEntityName,
           args.linkedEntityName,
-          // 'server/database',
-          // path.join(templatePath, 'server/modules/*'),
           path.join(__dirname, '../../src/server/modules', args.srcEntityName)
         );
         templateAlterFiles(
           logger,
-          // args.module,
           args.srcEntityName,
           args.linkedEntityName,
-          // 'server/database',
-          // path.join(templatePath, 'client/modules/*'),
           path.join(__dirname, '../../src/client/modules', args.srcEntityName)
         );
 
