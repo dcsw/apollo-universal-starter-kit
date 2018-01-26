@@ -126,17 +126,17 @@ function templateAlterFiles(
     }
   });
 
-  // replace module names in files
-  shell.ls('-Rl', destinationPath).forEach(entry => {
-    if (entry.isFile()) {
-      shell.sed('-i', /xxxx/g, srcEntityName, `${destinationPath}/${entry.name}`);
-      shell.sed('-i', /XXXX/g, srcEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
-      shell.sed('-i', /Xxxx/g, srcEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-      shell.sed('-i', /yyyy/g, linkedEntityName, `${destinationPath}/${entry.name}`);
-      shell.sed('-i', /YYYY/g, linkedEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
-      shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-    }
-  });
+  // // replace module names in files
+  // shell.ls('-Rl', destinationPath).forEach(entry => {
+  //   if (entry.isFile()) {
+  //     shell.sed('-i', /xxxx/g, srcEntityName, `${destinationPath}/${entry.name}`);
+  //     shell.sed('-i', /XXXX/g, srcEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
+  //     shell.sed('-i', /Xxxx/g, srcEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
+  //     shell.sed('-i', /yyyy/g, linkedEntityName, `${destinationPath}/${entry.name}`);
+  //     shell.sed('-i', /YYYY/g, linkedEntityName.toUpperCase(), `${destinationPath}/${entry.name}`);
+  //     shell.sed('-i', /Yyyy/g, linkedEntityName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
+  //   }
+  // });
 
   // add back-references for Xxxx to Yyyy, if Yyyy already exists....
 }
@@ -285,15 +285,8 @@ module.exports = (action, args, options, logger) => {
           path.join(__dirname, '../../src/client/modules', args.srcEntityName),
           false
         );
-        // copyFiles(
-        //   logger,
-        //   path.join(templatePath, 'client/modules/*'),
-        //   args.srcEntityName /* args.linkedEntityName, */,
-        //   path.join(__dirname, '../../src/client/modules', args.srcEntityName)
-        // );
 
         // Alter client GUI to include linked modules
-        // if (fs.existsSync(`${templatePath}/server/modules`)) {
         templateAlterFiles(
           logger,
           // args.module,
@@ -312,7 +305,29 @@ module.exports = (action, args, options, logger) => {
           // path.join(templatePath, 'client/modules/*'),
           path.join(__dirname, '../../src/client/modules', args.srcEntityName)
         );
+
+        // Add back reference to source entity in linked entity
+        // // get module input data
+        // const path = path.join(__dirname, '../../src/server/database/migration', args.linkedEntityName);
+        // let data = fs.readFileSync(path);
+
+        // // extract Feature modules
+        // const re = /Feature\(([^()]+)\)/g;
+        // const match = re.exec(data);
+        // if (match) {
+        //   const modules = match[1].split(',').filter(featureModule => featureModule.trim() !== module);
+
+        //   // remove import module line
+        //   const lines = data
+        //     .toString()
+        //     .split('\n')
+        //     .filter(line => line.match(`import ${module} from './${module}';`) === null);
+        //   fs.writeFileSync(path, lines.join('\n'));
+
+        //   // remove module from Feature function
+        //   shell.sed('-i', re, `Feature(${modules.toString().trim()})`, 'index.js');
         // }
+
         break;
       case 'deletemodule':
         deleteFiles(logger, templatePath, args.module, 'server/modules');
