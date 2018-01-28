@@ -77,20 +77,26 @@ function copyModuleFiles(logger, module, templatePath, location) {
   }
 }
 
-function templateAlterFile(logger, srcEntityName, linkedEntityName, filePath) {
+function templateAlterFile(logger, templateName, srcEntityName, linkedEntityName, filePath) {
   // Read templates out of file
   let contents = fs.readFileSync(filePath).toString();
   let templates = {};
   let templateId = '';
   contents.split('\n').forEach(l => {
-    let matchTemplateStart = l.match(/(\/\/|#)\sSTART-LINKED-MODULE-TEMPLATE-(.+)/);
+    let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-${templateName}\\-(.+)`);
+    // if (templateName.indexOf('ENTITY') >=0) logger.info(`barf ${reStart}`);
+    // logger.info(`barf ${reStart}`)
+    let matchTemplateStart = l.match(reStart);
     if (matchTemplateStart) {
       templateId = matchTemplateStart[2];
+      // logger.info(`barf ${templateName} -- in ${templateId}`);
     } else {
       if (templateId) {
-        let matchTemplateEnd = l.match(/(\/\/|#)\sEND-LINKED-MODULE-TEMPLATE-(.+)/);
+        let reEnd = new RegExp(`(\\/\\/|#)\\sEND\\-${templateName}\\-(.+)`);
+        let matchTemplateEnd = l.match(reEnd);
         if (matchTemplateEnd) templateId = '';
         if (templateId) {
+          // logger.info(`barf ${templateName} -- subbing ${templateId}`);
           if (!templates[templateId]) templates[templateId] = '';
           let m = l.match(/^(.*)(\/\/\s|#)(.*)/);
           if (m) templates[templateId] += `${m[1]}${m[3]}\n`;
@@ -102,7 +108,8 @@ function templateAlterFile(logger, srcEntityName, linkedEntityName, filePath) {
   let contentOut = '';
   contents.split('\n').forEach(l => {
     contentOut += `${l}\n`;
-    let matchTemplateTarget = l.match(/(\/\/|#)\sTARGET-LINKED-MODULE-TEMPLATE-(.+)/);
+    let reTarget = new RegExp(`(\\/\\/|#)\\sTARGET\\-${templateName}\\-(.+)`);
+    let matchTemplateTarget = l.match(reTarget);
     if (matchTemplateTarget) {
       contentOut += `${templates[matchTemplateTarget[2]]}\n`;
     }
@@ -111,35 +118,39 @@ function templateAlterFile(logger, srcEntityName, linkedEntityName, filePath) {
   fs.writeFileSync(filePath, contentOut);
 }
 
-function templateAlterFiles(logger, srcEntityName, linkedEntityName, destinationPath) {
+function templateAlterFiles(logger, templateName, srcEntityName, linkedEntityName, destinationPath) {
   logger.info(`Template substituting ${destinationPath} files…`);
   // template-substitute values
   shell.ls('-Rl', destinationPath).forEach(entry => {
     let filePath = path.join(destinationPath, entry.name);
     if (entry.isFile()) {
-      templateAlterFile(logger, srcEntityName, linkedEntityName, filePath);
+      templateAlterFile(logger, templateName, srcEntityName, linkedEntityName, filePath);
     }
   });
 }
 
-function fixFileContents(logger, filePath, arraySpec) {
+function fixFileContents(logger, templateName, filePath, arraySpec) {
   let contentOut = '';
   // Read templates out of file
   let contents = fs.readFileSync(filePath).toString();
   let templateId = '';
   contents.split('\n').forEach(l => {
-    let matchTemplateStart = l.match(/(\/\/|#)\sSTART-LINKED-MODULE-TEMPLATE-(.+)/);
+    let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-${templateName}\\-(.+)`);
+    let matchTemplateStart = l.match(reStart);
     if (matchTemplateStart) {
       templateId = matchTemplateStart[2];
     } else {
       if (templateId) {
-        let matchTemplateEnd = l.match(/(\/\/|#)\sEND-LINKED-MODULE-TEMPLATE-(.+)/);
+        let reEnd = new RegExp(`(\\/\\/|#)\\sEND\\-${templateName}\\-(.+)`);
+        let matchTemplateEnd = l.match(reEnd);
         if (matchTemplateEnd) templateId = '';
       }
       if (!templateId) {
         arraySpec.forEach(e => {
           let re = new RegExp(e.name, 'g');
-          l = l.replace(re, e.newName);
+          if (e.newName) {
+            l = l.replace(re, e.newName);
+          }
         });
       }
     }
@@ -149,12 +160,12 @@ function fixFileContents(logger, filePath, arraySpec) {
   fs.writeFileSync(filePath, contentOut);
 }
 
-function fixDirFileContents(logger, destinationPath, arraySpec) {
+function fixDirFileContents(logger, templateName, destinationPath, arraySpec) {
   logger.info(`Substituting non-templated areas in ${destinationPath} files…`);
   shell.ls('-Rl', destinationPath).forEach(entry => {
     if (entry.isFile()) {
       let filePath = path.join(destinationPath, entry.name);
-      fixFileContents(logger, filePath, arraySpec);
+      fixFileContents(logger, templateName, filePath, arraySpec);
     }
   });
 }
@@ -231,6 +242,7 @@ module.exports = (action, args, options, logger) => {
         copyModuleFiles(logger, args.module, templatePath, 'client/modules');
         fixDirFileContents(
           logger,
+          'TEMPLATE',
           `${__dirname}/../../src/client/modules/${args.module}`,
           makeArraySpec(args.module, null)
         );
@@ -250,6 +262,7 @@ module.exports = (action, args, options, logger) => {
         copyModuleFiles(logger, args.module, templatePath, 'server/modules');
         fixDirFileContents(
           logger,
+          'TEMPLATE',
           `${__dirname}/../../src/server/modules/${args.module}`,
           makeArraySpec(args.module, null)
         );
@@ -262,10 +275,16 @@ module.exports = (action, args, options, logger) => {
           );
           fixDirFileContents(
             logger,
+            'TEMPLATE',
             `${__dirname}/../../src/server/database/migrations/`,
             makeArraySpec(args.module, null)
           );
-          fixDirFileContents(logger, `${__dirname}/../../src/server/database/seeds/`, makeArraySpec(args.module, null));
+          fixDirFileContents(
+            logger,
+            'TEMPLATE',
+            `${__dirname}/../../src/server/database/seeds/`,
+            makeArraySpec(args.module, null)
+          );
         }
         break;
       case 'link-modules':
@@ -285,6 +304,7 @@ module.exports = (action, args, options, logger) => {
         // Alter client GUI to include linked modules
         templateAlterFiles(
           logger,
+          'TEMPLATE',
           args.srcEntityName,
           args.linkedEntityName,
           path.join(__dirname, '../../src/client/modules', args.srcEntityName)
@@ -292,6 +312,7 @@ module.exports = (action, args, options, logger) => {
         // Alter server files to include linked modules
         templateAlterFiles(
           logger,
+          'TEMPLATE',
           args.srcEntityName,
           args.linkedEntityName,
           path.join(__dirname, '../../src/server/modules', args.srcEntityName)
@@ -300,24 +321,35 @@ module.exports = (action, args, options, logger) => {
         logger.info(`Template substituting ${path.join(__dirname, '../../src/server/database/')}... files…`);
         templateAlterFile(
           logger,
+          'TEMPLATE',
           args.srcEntityName,
           args.linkedEntityName,
           `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
         );
         templateAlterFile(
           logger,
+          'TEMPLATE',
           args.srcEntityName,
           args.linkedEntityName,
           `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
         );
         templateAlterFile(
           logger,
+          'SOURCE-ENTITY-TEMPLATE',
+          args.srcEntityName,
+          args.linkedEntityName,
+          `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
+        );
+        templateAlterFile(
+          logger,
+          'TEMPLATE',
           args.srcEntityName,
           args.linkedEntityName,
           `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`
         );
         templateAlterFile(
           logger,
+          'TEMPLATE',
           args.srcEntityName,
           args.linkedEntityName,
           `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
@@ -326,11 +358,13 @@ module.exports = (action, args, options, logger) => {
         // Change template XXXX's and YYYY's to entity names
         fixDirFileContents(
           logger,
+          'TEMPLATE',
           `${__dirname}/../../src/client/modules/${args.srcEntityName}`,
           makeArraySpec(args.srcEntityName, args.linkedEntityName)
         );
         fixDirFileContents(
           logger,
+          'TEMPLATE',
           `${__dirname}/../../src/server/modules/${args.srcEntityName}`,
           makeArraySpec(args.srcEntityName, args.linkedEntityName)
         );
@@ -340,21 +374,25 @@ module.exports = (action, args, options, logger) => {
         );
         fixFileContents(
           logger,
+          'TEMPLATE',
           `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`,
           makeArraySpec(args.srcEntityName, args.linkedEntityName)
         );
         fixFileContents(
           logger,
+          'TEMPLATE',
           `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
           makeArraySpec(args.srcEntityName, args.linkedEntityName)
         );
         fixFileContents(
           logger,
+          'TEMPLATE',
           `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`,
           makeArraySpec(args.srcEntityName, args.linkedEntityName)
         );
         fixFileContents(
           logger,
+          'TEMPLATE',
           `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`,
           makeArraySpec(args.srcEntityName, args.linkedEntityName)
         );

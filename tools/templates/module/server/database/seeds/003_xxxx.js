@@ -3,10 +3,10 @@ import { truncateTables } from '../../sql/helpers';
 export async function seed(knex, Promise) {
   await truncateTables(knex, Promise, [
     'xxxx',
-    // START-LINKED-MODULE-TEMPLATE-0
+    // START-TEMPLATE-0
     // // 'yyyy',
-    // END-LINKED-MODULE-TEMPLATE-0
-    // TARGET-LINKED-MODULE-TEMPLATE-0
+    // END-TEMPLATE-0
+    // TARGET-TEMPLATE-0
   ]);
 
   await Promise.all(
@@ -18,7 +18,7 @@ export async function seed(knex, Promise) {
           content: `Xxxx content ${ii + 1}`
         });
 
-      // START-LINKED-MODULE-TEMPLATE-1
+      // START-SOURCE-ENTITY-TEMPLATE-1
       // await Promise.all(
       //   [...Array(2).keys()].map(async jj => {
       //     return knex('yyyy')
@@ -29,8 +29,8 @@ export async function seed(knex, Promise) {
       //       });
       //   })
       // );
-      // END-LINKED-MODULE-TEMPLATE-1
-      // TARGET-LINKED-MODULE-TEMPLATE-1
+      // END-SOURCE-ENTITY-TEMPLATE-1
+      // TARGET-SOURCE-ENTITY-TEMPLATE-1
     })
   );
 }

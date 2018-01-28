@@ -14,12 +14,12 @@ export default new Feature({
 
     return {
       Xxxx: xxxx,
-      // START-LINKED-MODULE-TEMPLATE-0
+      // START-TEMPLATE-0
       // loaders: {
       //   getYyyysForXxxxIds: new DataLoader(xxxx.getYyyysForXxxxIds)
       // }
-      // END-LINKED-MODULE-TEMPLATE-0
-      // TARGET-LINKED-MODULE-TEMPLATE-0
+      // END-TEMPLATE-0
+      // TARGET-TEMPLATE-0
     };
   }
 });

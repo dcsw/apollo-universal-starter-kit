@@ -2,10 +2,10 @@ import { withFilter } from 'graphql-subscriptions';
 
 const XXXX_SUBSCRIPTION = 'xxxx_subscription';
 const XXXXS_SUBSCRIPTION = 'xxxxs_subscription';
-// START-LINKED-MODULE-TEMPLATE-0
+// START-TEMPLATE-0
 // const YYYY_SUBSCRIPTION = 'yyyy_subscription';
-// END-LINKED-MODULE-TEMPLATE-0
-// TARGET-LINKED-MODULE-TEMPLATE-0
+// END-TEMPLATE-0
+// TARGET-TEMPLATE-0
 
 export default pubsub => ({
   Query: {
@@ -42,12 +42,12 @@ export default pubsub => ({
     }
   },
   Xxxx: {
-    // START-LINKED-MODULE-TEMPLATE-1
+    // START-TEMPLATE-1
     // yyyys({ id }, args, context) {
       // return context.loaders.getYyyysForXxxxIds.load(id);
     // }
-    // END-LINKED-MODULE-TEMPLATE-1
-    // TARGET-LINKED-MODULE-TEMPLATE-1
+    // END-TEMPLATE-1
+    // TARGET-TEMPLATE-1
   },
   Mutation: {
     async addXxxx(obj, { input }, context) {
@@ -95,7 +95,7 @@ export default pubsub => ({
       pubsub.publish(XXXX_SUBSCRIPTION, { xxxxUpdated: xxxx });
       return xxxx;
     },
-    // START-LINKED-MODULE-TEMPLATE-2
+    // START-TEMPLATE-2
     // async addYyyy(obj, { input }, context) {
     //   const [id] = await context.Xxxx.addYyyy(input);
     //   const yyyy = await context.Xxxx.getYyyy(id);
@@ -137,8 +137,8 @@ export default pubsub => ({
     //   });
     //   return yyyy;
     // }
-    // END-LINKED-MODULE-TEMPLATE-2
-    // TARGET-LINKED-MODULE-TEMPLATE-2
+    // END-TEMPLATE-2
+    // TARGET-TEMPLATE-2
   },
   Subscription: {
     xxxxUpdated: {
@@ -157,7 +157,7 @@ export default pubsub => ({
         }
       )
     },
-    // START-LINKED-MODULE-TEMPLATE-3
+    // START-TEMPLATE-3
     // yyyyUpdated: {
     //   subscribe: withFilter(
     //     () => pubsub.asyncIterator(YYYY_SUBSCRIPTION),
@@ -166,7 +166,7 @@ export default pubsub => ({
     //     }
     //   )
     // }
-    // END-LINKED-MODULE-TEMPLATE-3
-    // TARGET-LINKED-MODULE-TEMPLATE-3
+    // END-TEMPLATE-3
+    // TARGET-TEMPLATE-3
   }
 });

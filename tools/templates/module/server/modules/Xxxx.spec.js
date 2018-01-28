@@ -56,7 +56,7 @@ describe('Xxxx example API works', () => {
         title: 'Xxxx title 1',
         content: 'Xxxx content 1',
         __typename: 'Xxxx',
-        // START-LINKED-MODULE-TEMPLATE-0
+        // START-TEMPLATE-0
         // yyyys: [
         //   {
         //     id: 1,
@@ -69,8 +69,8 @@ describe('Xxxx example API works', () => {
         //     __typename: 'Yyyy'
         //   }
         // ]
-        // END-LINKED-MODULE-TEMPLATE-0
-        // TARGET-LINKED-MODULE-TEMPLATE-0
+        // END-TEMPLATE-0
+        // TARGET-TEMPLATE-0
       }
     });
   });

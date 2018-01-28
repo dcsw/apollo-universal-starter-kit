@@ -16,7 +16,7 @@ export default class Xxxx {
       .limit(limit);
   }
 
-  // START-LINKED-MODULE-TEMPLATE-0
+  // START-TEMPLATE-0
   // async getYyyysForXxxxIds(xxxxIds) {
   //   let res = await knex
   //     .select('id', 'content', 'xxxx_id AS xxxxId')
@@ -25,8 +25,8 @@ export default class Xxxx {
 
   //   return orderedFor(res, xxxxIds, 'xxxxId', false);
   // }
-  // END-LINKED-MODULE-TEMPLATE-0
-  // TARGET-LINKED-MODULE-TEMPLATE-0
+  // END-TEMPLATE-0
+  // TARGET-TEMPLATE-0
 
   getTotal() {
     return knex('xxxx')
@@ -70,7 +70,7 @@ export default class Xxxx {
       });
   }
 
-  // START-LINKED-MODULE-TEMPLATE-1
+  // START-TEMPLATE-1
   // addYyyy({ content, xxxxId }) {
   //   return knex('yyyy')
   //     .insert({ content, xxxx_id: xxxxId })
@@ -98,6 +98,6 @@ export default class Xxxx {
   //       content: content
   //     });
   // }
-  // END-LINKED-MODULE-TEMPLATE-1
-  // TARGET-LINKED-MODULE-TEMPLATE-1
+  // END-TEMPLATE-1
+  // TARGET-TEMPLATE-1
 }
