@@ -13,88 +13,31 @@ String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
-function copyRenameFiles(logger, moduleName, files, destinationPath, alter = true) {
+function copyfixFileNames(logger, srcEntityName, files, destinationPath) {
   // copy files
   shell.cp('-R', files, destinationPath);
   logger.info(`✔ The ${files} files have been copied to ${destinationPath}!`);
 
-  // change to destination directory & rename files & module names
-  // rename files
-  shell.ls('-Rl', destinationPath).forEach(entry => {
-    if (entry.isFile()) {
-      [
-        { name: 'xxxx', newName: moduleName },
-        { name: 'Xxxx', newName: moduleName.capitalize() },
-        { name: 'XXXX', newName: moduleName.toUpperCase() }
-      ].forEach(e => {
-        if (entry.name.indexOf(e.name) >= 0) {
-          const moduleFile = entry.name.replace(e.name, e.newName);
-          shell.mv(`${destinationPath}/${entry.name}`, `${destinationPath}/${moduleFile}`);
-        }
-      });
-    }
-  });
-
-  // replace module names in files
-  if (alter) {
-    shell.ls('-Rl', destinationPath).forEach(entry => {
-      if (entry.isFile()) {
-        shell.sed('-i', /xxxx/g, moduleName, `${destinationPath}/${entry.name}`);
-        shell.sed('-i', /XXXX/g, moduleName.toUpperCase(), `${destinationPath}/${entry.name}`);
-        shell.sed('-i', /Xxxx/g, moduleName.toCamelCase().capitalize(), `${destinationPath}/${entry.name}`);
-      }
-    });
-  }
+  // change to destination directory & rename files
+  fixFileNames(destinationPath, srcEntityName, makeArraySpec(srcEntityName, null));
 }
 
-function templateAlterFiles(logger, srcEntityName, linkedEntityName, destinationPath) {
-  // template-substitute values
-  shell.ls('-Rl', destinationPath).forEach(entry => {
-    let filePath = path.join(destinationPath, entry.name);
-    if (entry.isFile()) {
-      // Read templates out of file
-      let contents = fs.readFileSync(filePath).toString();
-      let templates = {};
-      let templateId = '';
-      contents.split('\n').forEach(l => {
-        let matchTemplateStart = l.match(/(\/\/|#)\sSTART-LINKED-MODULE-TEMPLATE-(.+)/);
-        if (matchTemplateStart) {
-          templateId = matchTemplateStart[2];
-        } else {
-          if (templateId) {
-            let matchTemplateEnd = l.match(/(\/\/|#)\sEND-LINKED-MODULE-TEMPLATE-(.+)/);
-            if (matchTemplateEnd) templateId = '';
-            if (templateId) {
-              if (!templates[templateId]) templates[templateId] = '';
-              let m = l.match(/^(.*)(\/\/\s|#)(.*)/);
-              if (m) templates[templateId] += `${m[1]}${m[3]}\n`;
-            }
-          }
-        }
-      });
-      // Make template-substituted output
-      let contentOut = '';
-      contents.split('\n').forEach(l => {
-        contentOut += `${l}\n`;
-        let matchTemplateTarget = l.match(/(\/\/|#)\sTARGET-LINKED-MODULE-TEMPLATE-(.+)/);
-        if (matchTemplateTarget) {
-          contentOut += `${templates[matchTemplateTarget[2]]}\n`;
-        }
-      });
-      // Rewrite file w/template-substituted content
-      fs.writeFileSync(filePath, contentOut);
-    }
-  });
+function makeArraySpec(srcEntityName, linkedEntityName) {
+  return [
+    { name: 'xxxx', newName: srcEntityName },
+    { name: 'Xxxx', newName: srcEntityName.capitalize() },
+    { name: 'XXXX', newName: srcEntityName.toUpperCase() },
+    { name: 'yyyy', newName: !linkedEntityName ? null : linkedEntityName },
+    { name: 'Yyyy', newName: !linkedEntityName ? null : linkedEntityName.capitalize() },
+    { name: 'YYYY', newName: !linkedEntityName ? null : linkedEntityName.toUpperCase() }
+  ];
+}
 
-  // rename files
+function fixFileNames(destinationPath, srcEntityName, arraySpec) {
   shell.ls('-Rl', destinationPath).forEach(entry => {
     if (entry.isFile()) {
-      [
-        { name: 'yyyy', newName: linkedEntityName },
-        { name: 'Yyyy', newName: linkedEntityName.capitalize() },
-        { name: 'YYYY', newName: linkedEntityName.toUpperCase() }
-      ].forEach(e => {
-        if (entry.name.indexOf(e.name) >= 0) {
+      arraySpec.forEach(e => {
+        if (!!e.newName && entry.name.indexOf(e.name) >= 0) {
           const moduleFile = entry.name.replace(e.name, e.newName);
           shell.mv(`${destinationPath}/${entry.name}`, `${destinationPath}/${moduleFile}`);
         }
@@ -103,21 +46,17 @@ function templateAlterFiles(logger, srcEntityName, linkedEntityName, destination
   });
 }
 
-function copyFiles(logger, templatePath, module, location) {
+function copyModuleFiles(logger, module, templatePath, location) {
   logger.info(`Copying ${location} files…`);
 
   // create new module directory
+  console.log(`${__dirname}/../../src/${location}/${module}`);
   const mkdir = shell.mkdir(`${__dirname}/../../src/${location}/${module}`);
 
   // continue only if directory does not yet exist
   if (mkdir.code === 0) {
     const destinationPath = `${__dirname}/../../src/${location}/${module}`;
-    copyRenameFiles(
-      logger,
-      module,
-      /* linkedEntityName, */ /* location, */ `${templatePath}/${location}/*`,
-      destinationPath
-    );
+    copyfixFileNames(logger, module, `${templatePath}/${location}/*`, destinationPath);
 
     // get module input data
     const path = `${__dirname}/../../src/${location}/index.js`;
@@ -136,6 +75,88 @@ function copyFiles(logger, templatePath, module, location) {
 
     logger.info(`✔ Module for ${location} successfully created!`);
   }
+}
+
+function templateAlterFile(logger, srcEntityName, linkedEntityName, filePath) {
+  // Read templates out of file
+  let contents = fs.readFileSync(filePath).toString();
+  let templates = {};
+  let templateId = '';
+  contents.split('\n').forEach(l => {
+    let matchTemplateStart = l.match(/(\/\/|#)\sSTART-LINKED-MODULE-TEMPLATE-(.+)/);
+    if (matchTemplateStart) {
+      templateId = matchTemplateStart[2];
+    } else {
+      if (templateId) {
+        let matchTemplateEnd = l.match(/(\/\/|#)\sEND-LINKED-MODULE-TEMPLATE-(.+)/);
+        if (matchTemplateEnd) templateId = '';
+        if (templateId) {
+          if (!templates[templateId]) templates[templateId] = '';
+          let m = l.match(/^(.*)(\/\/\s|#)(.*)/);
+          if (m) templates[templateId] += `${m[1]}${m[3]}\n`;
+        }
+      }
+    }
+  });
+  // Make template-substituted output
+  let contentOut = '';
+  contents.split('\n').forEach(l => {
+    contentOut += `${l}\n`;
+    let matchTemplateTarget = l.match(/(\/\/|#)\sTARGET-LINKED-MODULE-TEMPLATE-(.+)/);
+    if (matchTemplateTarget) {
+      contentOut += `${templates[matchTemplateTarget[2]]}\n`;
+    }
+  });
+  // Rewrite file w/template-substituted content
+  fs.writeFileSync(filePath, contentOut);
+}
+
+function templateAlterFiles(logger, srcEntityName, linkedEntityName, destinationPath) {
+  logger.info(`Template substituting ${destinationPath} files…`);
+  // template-substitute values
+  shell.ls('-Rl', destinationPath).forEach(entry => {
+    let filePath = path.join(destinationPath, entry.name);
+    if (entry.isFile()) {
+      templateAlterFile(logger, srcEntityName, linkedEntityName, filePath);
+    }
+  });
+}
+
+function fixFileContents(logger, filePath, arraySpec) {
+  let contentOut = '';
+  // Read templates out of file
+  let contents = fs.readFileSync(filePath).toString();
+  let templateId = '';
+  contents.split('\n').forEach(l => {
+    let matchTemplateStart = l.match(/(\/\/|#)\sSTART-LINKED-MODULE-TEMPLATE-(.+)/);
+    if (matchTemplateStart) {
+      templateId = matchTemplateStart[2];
+    } else {
+      if (templateId) {
+        let matchTemplateEnd = l.match(/(\/\/|#)\sEND-LINKED-MODULE-TEMPLATE-(.+)/);
+        if (matchTemplateEnd) templateId = '';
+      }
+      if (!templateId) {
+        arraySpec.forEach(e => {
+          let re = new RegExp(e.name, 'g');
+          l = l.replace(re, e.newName);
+        });
+      }
+    }
+    contentOut += `${l}\n`;
+  });
+  // Rewrite file w/template-substituted content
+  fs.writeFileSync(filePath, contentOut);
+}
+
+function fixDirFileContents(logger, destinationPath, arraySpec) {
+  logger.info(`Substituting non-templated areas in ${destinationPath} files…`);
+  shell.ls('-Rl', destinationPath).forEach(entry => {
+    if (entry.isFile()) {
+      let filePath = path.join(destinationPath, entry.name);
+      fixFileContents(logger, filePath, arraySpec);
+    }
+  });
 }
 
 function deleteFiles(logger, templatePath, module, location) {
@@ -207,7 +228,12 @@ module.exports = (action, args, options, logger) => {
       case 'addmodule':
       case 'add-crud-list-module':
       case 'add-linked-crud-list-module':
-        copyFiles(logger, templatePath, args.module, 'client/modules');
+        copyModuleFiles(logger, args.module, templatePath, 'client/modules');
+        fixDirFileContents(
+          logger,
+          `${__dirname}/../../src/client/modules/${args.module}`,
+          makeArraySpec(args.module, null)
+        );
         break;
       case 'deletemodule':
         deleteFiles(logger, templatePath, args.module, 'client/modules');
@@ -221,39 +247,94 @@ module.exports = (action, args, options, logger) => {
       case 'addmodule':
       case 'add-crud-list-module':
       case 'add-linked-crud-list-module':
-        copyFiles(logger, templatePath, args.module, 'client/modules');
-        copyFiles(logger, templatePath, args.module, 'server/modules');
+        copyModuleFiles(logger, args.module, templatePath, 'server/modules');
+        fixDirFileContents(
+          logger,
+          `${__dirname}/../../src/server/modules/${args.module}`,
+          makeArraySpec(args.module, null)
+        );
         if (fs.existsSync(`${templatePath}/server/database`)) {
-          copyRenameFiles(
+          copyfixFileNames(
             logger,
             args.module,
             `${templatePath}/server/database/*`,
             `${__dirname}/../../src/server/database`
           );
+          fixDirFileContents(
+            logger,
+            `${__dirname}/../../src/server/database/migrations/`,
+            makeArraySpec(args.module, null)
+          );
+          fixDirFileContents(logger, `${__dirname}/../../src/server/database/seeds/`, makeArraySpec(args.module, null));
         }
         break;
       case 'link-modules':
         // Add files to client module
-        copyRenameFiles(
+        copyfixFileNames(
           logger,
           args.srcEntityName,
           path.join(templatePath, 'client/modules/*'),
-          path.join(__dirname, '../../src/client/modules', args.srcEntityName),
-          false
+          path.join(__dirname, '../../src/client/modules', args.srcEntityName)
         );
+        fixFileNames(path.join(__dirname, '../../src/client/modules', args.srcEntityName), args.linkedEntityName, [
+          { name: 'yyyy', newName: args.linkedEntityName },
+          { name: 'Yyyy', newName: args.linkedEntityName.capitalize() },
+          { name: 'YYYY', newName: args.linkedEntityName.toUpperCase() }
+        ]);
 
         // Alter client GUI to include linked modules
         templateAlterFiles(
           logger,
           args.srcEntityName,
           args.linkedEntityName,
-          path.join(__dirname, '../../src/server/modules', args.srcEntityName)
+          path.join(__dirname, '../../src/client/modules', args.srcEntityName)
         );
+        // Alter server files to include linked modules
         templateAlterFiles(
           logger,
           args.srcEntityName,
           args.linkedEntityName,
-          path.join(__dirname, '../../src/client/modules', args.srcEntityName)
+          path.join(__dirname, '../../src/server/modules', args.srcEntityName)
+        );
+        // Alter individual files under database to include linked modules
+        logger.info(`Template substituting ${path.join(__dirname, '../../src/server/database/')}... files…`);
+        templateAlterFile(
+          logger,
+          args.srcEntityName,
+          args.linkedEntityName,
+          `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
+        );
+        templateAlterFile(
+          logger,
+          args.srcEntityName,
+          args.linkedEntityName,
+          `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
+        );
+
+        // Change template XXXX's and YYYY's to entity names
+        fixDirFileContents(
+          logger,
+          `${__dirname}/../../src/client/modules/${args.srcEntityName}`,
+          makeArraySpec(args.srcEntityName, args.linkedEntityName)
+        );
+        fixDirFileContents(
+          logger,
+          `${__dirname}/../../src/server/modules/${args.srcEntityName}`,
+          makeArraySpec(args.srcEntityName, args.linkedEntityName)
+        );
+        // Change template XXXX's and YYYY's in individual files under database
+        logger.info(
+          `Substituting non-templated areas in ${path.join(__dirname, '../../src/server/database/')}... files…`
+        );
+        fixFileContents(
+          logger,
+          `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`,
+          makeArraySpec(args.srcEntityName, args.linkedEntityName)
+        );
+        fixFileContents(
+          logger,
+          `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
+          makeArraySpec(args.srcEntityName, args.linkedEntityName)
         );
 
         // Add back reference to source entity in linked entity

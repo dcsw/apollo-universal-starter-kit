@@ -2,9 +2,9 @@ import { truncateTables } from '../../sql/helpers';
 
 export async function seed(knex, Promise) {
   await truncateTables(knex, Promise, [
-    'xxxx'
+    'xxxx',
     // START-LINKED-MODULE-TEMPLATE-0
-    //  'yyyy'
+    // // 'yyyy',
     // END-LINKED-MODULE-TEMPLATE-0
     // TARGET-LINKED-MODULE-TEMPLATE-0
   ]);
