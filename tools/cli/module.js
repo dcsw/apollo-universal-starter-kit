@@ -310,6 +310,18 @@ module.exports = (action, args, options, logger) => {
           args.linkedEntityName,
           `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
         );
+        templateAlterFile(
+          logger,
+          args.srcEntityName,
+          args.linkedEntityName,
+          `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`
+        );
+        templateAlterFile(
+          logger,
+          args.srcEntityName,
+          args.linkedEntityName,
+          `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
+        );
 
         // Change template XXXX's and YYYY's to entity names
         fixDirFileContents(
@@ -334,6 +346,16 @@ module.exports = (action, args, options, logger) => {
         fixFileContents(
           logger,
           `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
+          makeArraySpec(args.srcEntityName, args.linkedEntityName)
+        );
+        fixFileContents(
+          logger,
+          `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`,
+          makeArraySpec(args.srcEntityName, args.linkedEntityName)
+        );
+        fixFileContents(
+          logger,
+          `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`,
           makeArraySpec(args.srcEntityName, args.linkedEntityName)
         );
 
