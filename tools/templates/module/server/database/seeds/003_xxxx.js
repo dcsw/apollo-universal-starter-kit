@@ -25,7 +25,8 @@ export async function seed(knex, Promise) {
       //       .returning('id')
       //       .insert({
       //         xxxx_id: xxxx[0],
-      //         content: `Yyyy title ${jj + 1} for xxxx ${xxxx[0]}`
+      //         title: `Yyyy title ${jj + 1} for xxxx ${xxxx[0]}`,
+      //         content: `Yyyy content ${jj + 1} for xxxx ${xxxx[0]}`
       //       });
       //   })
       // );

@@ -1,5 +1,5 @@
 fragment XxxxInfo on Xxxx {
-  id
-  title
-  content
+    id
+    title
+    content
 }

@@ -1,7 +1,7 @@
-#import "./Xxxx.graphql"
+#import "./XxxxInfo.graphql"
 
 subscription onXxxxUpdated($id: Int!) {
-  xxxxUpdated(id: $id) {
-    ...XxxxInfo
-  }
+    xxxxUpdated(id: $id) {
+        ...XxxxInfo
+    }
 }

@@ -1,7 +1,7 @@
-#import "./Yyyy.graphql"
+#import "./YyyyInfo.graphql"
 
 mutation editYyyy($input: EditYyyyInput!) {
-  editYyyy(input: $input) {
-    ...YyyyInfo
-  }
+    editYyyy(input: $input) {
+        ...YyyyInfo
+    }
 }

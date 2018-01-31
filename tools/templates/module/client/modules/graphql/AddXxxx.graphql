@@ -1,6 +1,6 @@
-#import "./Xxxx.graphql"
+#import "./XxxxInfo.graphql"
 # START-TEMPLATE-0
-##import "./Yyyy.graphql"
+##import "./YyyyInfo.graphql"
 # END-TEMPLATE-0
 # TARGET-TEMPLATE-0
 

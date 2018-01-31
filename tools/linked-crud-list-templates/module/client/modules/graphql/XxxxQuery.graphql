@@ -1,11 +1,11 @@
-#import "./Xxxx.graphql"
-#import "./Yyyy.graphql"
+#import "./XxxxInfo.graphql"
+#import "./YyyyInfo.graphql"
 
 query xxxx($id: Int!) {
-  xxxx(id: $id) {
-    ...XxxxInfo
-    yyyys {
-      ...YyyyInfo
+    xxxx(id: $id) {
+        ...XxxxInfo
+        yyyys {
+            ...YyyyInfo
+        }
     }
-  }
 }

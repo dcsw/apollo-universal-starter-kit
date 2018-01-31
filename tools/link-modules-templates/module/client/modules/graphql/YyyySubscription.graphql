@@ -1,4 +1,4 @@
-#import "./Yyyy.graphql"
+#import "./YyyyInfo.graphql"
 
 subscription onYyyyUpdated($xxxxId: Int!) {
     yyyyUpdated(xxxxId: $xxxxId) {

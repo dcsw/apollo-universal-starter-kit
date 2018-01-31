@@ -1,4 +1,4 @@
-#import "./Xxxx.graphql"
+#import "./XxxxInfo.graphql"
 
 query xxxxs($limit: Int!, $after: Int) {
     xxxxs(limit: $limit, after: $after) {

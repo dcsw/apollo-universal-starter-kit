@@ -1,17 +1,17 @@
-#import "./Xxxx.graphql"
+#import "./XxxxInfo.graphql"
 
 query xxxxs($limit: Int!, $after: Int) {
-  xxxxs(limit: $limit, after: $after) {
-    totalCount
-    edges {
-      cursor
-      node {
-        ...XxxxInfo
-      }
+    xxxxs(limit: $limit, after: $after) {
+        totalCount
+        edges {
+            cursor
+            node {
+                ...XxxxInfo
+            }
+        }
+        pageInfo {
+            endCursor
+            hasNextPage
+        }
     }
-    pageInfo {
-      endCursor
-      hasNextPage
-    }
-  }
 }

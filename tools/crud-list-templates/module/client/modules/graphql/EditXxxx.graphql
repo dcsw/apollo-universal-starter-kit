@@ -1,7 +1,7 @@
-#import "./Xxxx.graphql"
+#import "./XxxxInfo.graphql"
 
 mutation editXxxx($input: EditXxxxInput!) {
-  editXxxx(input: $input) {
-    ...XxxxInfo
-  }
+    editXxxx(input: $input) {
+        ...XxxxInfo
+    }
 }

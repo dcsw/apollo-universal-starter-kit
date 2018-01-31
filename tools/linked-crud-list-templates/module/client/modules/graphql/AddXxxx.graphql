@@ -1,11 +1,11 @@
-#import "./Xxxx.graphql"
-#import "./Yyyy.graphql"
+#import "./XxxxInfo.graphql"
+#import "./YyyyInfo.graphql"
 
 mutation addXxxx($input: AddXxxxInput!) {
-  addXxxx(input: $input) {
-    ...XxxxInfo
-    yyyys {
-      ...YyyyInfo
+    addXxxx(input: $input) {
+        ...XxxxInfo
+        yyyys {
+            ...YyyyInfo
+        }
     }
-  }
 }

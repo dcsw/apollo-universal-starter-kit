@@ -1,4 +1,4 @@
-#import "./Xxxx.graphql"
+#import "./XxxxInfo.graphql"
 
 subscription onXxxxsUpdated($endCursor: Int!) {
     xxxxsUpdated(endCursor: $endCursor) {
