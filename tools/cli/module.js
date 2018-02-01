@@ -133,19 +133,19 @@ function fixFileContents(logger, templateName, filePath, arraySpec) {
   let contentOut = '';
   // Read templates out of file
   let contents = fs.readFileSync(filePath).toString();
-  let templateId = '';
+  let templateId = null;
   contents.split('\n').forEach(l => {
-    let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-${templateName}\\-(.+)`);
+    let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-(\\S+)\\-(.+)`);
     let matchTemplateStart = l.match(reStart);
     if (matchTemplateStart) {
-      templateId = matchTemplateStart[2];
+      templateId = matchTemplateStart[3];
     } else {
-      if (templateId) {
-        let reEnd = new RegExp(`(\\/\\/|#)\\sEND\\-${templateName}\\-(.+)`);
+      if (templateId != null) {
+        let reEnd = new RegExp(`(\\/\\/|#)\\sEND\\-(\\S+)\\-(.+)`);
         let matchTemplateEnd = l.match(reEnd);
-        if (matchTemplateEnd) templateId = '';
+        if (matchTemplateEnd) templateId = null;
       }
-      if (!templateId) {
+      if (templateId == null) {
         arraySpec.forEach(e => {
           let re = new RegExp(e.name, 'g');
           if (e.newName) {
