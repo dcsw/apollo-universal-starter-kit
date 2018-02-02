@@ -114,6 +114,7 @@ function templateAlterFile(logger, templateName, srcEntityName, linkedEntityName
       contentOut += `${templates[matchTemplateTarget[2]]}\n`;
     }
   });
+  contentOut = contentOut.substring(0, contentOut.length - 1);
   // Rewrite file w/template-substituted content
   fs.writeFileSync(filePath, contentOut);
 }
@@ -156,6 +157,7 @@ function fixFileContents(logger, templateName, filePath, arraySpec) {
     }
     contentOut += `${l}\n`;
   });
+  contentOut = contentOut.substring(0, contentOut.length - 1);
   // Rewrite file w/template-substituted content
   fs.writeFileSync(filePath, contentOut);
 }
