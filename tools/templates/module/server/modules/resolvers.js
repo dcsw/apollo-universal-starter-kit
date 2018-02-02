@@ -96,8 +96,8 @@ export default pubsub => ({
       return xxxx;
     },
     // START-TEMPLATE-2
-    // async addYyyy(obj, { input }, context) {
-    //   const [id] = await context.Xxxx.addYyyy(input);
+    // async addYyyyToXxxx(obj, { input }, context) {
+    //   const [id] = await context.Xxxx.addYyyyToXxxx(input);
     //   const yyyy = await context.Xxxx.getYyyy(id);
     //   // publish for edit xxxx page
     //   pubsub.publish(YYYY_SUBSCRIPTION, {
@@ -110,8 +110,8 @@ export default pubsub => ({
     //   });
     //   return yyyy;
     // },
-    // async deleteYyyy(obj, { input: { id, xxxxId } }, context) {
-    //   await context.Xxxx.deleteYyyy(id);
+    // async deleteYyyyFromXxxx(obj, { input: { id, xxxxId } }, context) {
+    //   await context.Xxxx.deleteYyyyFromXxxx(id);
     //   // publish for edit xxxx page
     //   pubsub.publish(YYYY_SUBSCRIPTION, {
     //     yyyyUpdated: {
@@ -123,8 +123,8 @@ export default pubsub => ({
     //   });
     //   return { id };
     // },
-    // async editYyyy(obj, { input }, context) {
-    //   await context.Xxxx.editYyyy(input);
+    // async editYyyyInXxxx(obj, { input }, context) {
+    //   await context.Xxxx.editYyyyInXxxx(input);
     //   const yyyy = await context.Xxxx.getYyyy(input.id);
     //   // publish for edit xxxx page
     //   pubsub.publish(YYYY_SUBSCRIPTION, {

@@ -10,9 +10,9 @@ export default class XxxxYyyysView extends React.PureComponent {
     xxxxId: PropTypes.number.isRequired,
     yyyys: PropTypes.array.isRequired,
     yyyy: PropTypes.object,
-    addYyyy: PropTypes.func.isRequired,
-    editYyyy: PropTypes.func.isRequired,
-    deleteYyyy: PropTypes.func.isRequired,
+    addYyyyToXxxx: PropTypes.func.isRequired,
+    editYyyyInXxxx: PropTypes.func.isRequired,
+    deleteYyyyFromXxxx: PropTypes.func.isRequired,
     onYyyySelect: PropTypes.func.isRequired,
     onFormSubmitted: PropTypes.func.isRequired,
     subscribeToMore: PropTypes.func.isRequired
@@ -21,13 +21,13 @@ export default class XxxxYyyysView extends React.PureComponent {
   keyExtractor = item => item.id;
 
   renderItem = ({ item: { id, content } }) => {
-    const { yyyy, deleteYyyy, onYyyySelect } = this.props;
+    const { yyyy, deleteYyyyFromXxxx, onYyyySelect } = this.props;
     return (
       <SwipeAction
         onPress={() => onYyyySelect({ id: id, content: content })}
         right={{
           text: 'Delete',
-          onPress: () => this.onYyyyDelete(yyyy, deleteYyyy, onYyyySelect, id)
+          onPress: () => this.onYyyyDelete(yyyy, deleteYyyyFromXxxx, onYyyySelect, id)
         }}
       >
         {content}
@@ -35,19 +35,19 @@ export default class XxxxYyyysView extends React.PureComponent {
     );
   };
 
-  onYyyyDelete = (yyyy, deleteYyyy, onYyyySelect, id) => {
+  onYyyyDelete = (yyyy, deleteYyyyFromXxxx, onYyyySelect, id) => {
     if (yyyy.id === id) {
       onYyyySelect({ id: null, content: '' });
     }
 
-    deleteYyyy(id);
+    deleteYyyyFromXxxx(id);
   };
 
-  onSubmit = (yyyy, xxxxId, addYyyy, editYyyy, onYyyySelect, onFormSubmitted) => values => {
+  onSubmit = (yyyy, xxxxId, addYyyyToXxxx, editYyyyInXxxx, onYyyySelect, onFormSubmitted) => values => {
     if (yyyy.id === null) {
-      addYyyy(values.content, xxxxId);
+      addYyyyToXxxx(values.content, xxxxId);
     } else {
-      editYyyy(yyyy.id, values.content);
+      editYyyyInXxxx(yyyy.id, values.content);
     }
 
     onYyyySelect({ id: null, content: '' });
@@ -56,14 +56,14 @@ export default class XxxxYyyysView extends React.PureComponent {
   };
 
   render() {
-    const { xxxxId, yyyy, addYyyy, editYyyy, yyyys, onYyyySelect, onFormSubmitted } = this.props;
+    const { xxxxId, yyyy, addYyyyToXxxx, editYyyyInXxxx, yyyys, onYyyySelect, onFormSubmitted } = this.props;
 
     return (
       <View>
         <Text style={styles.title}>Yyyys</Text>
         <XxxxYyyyForm
           xxxxId={xxxxId}
-          onSubmit={this.onSubmit(yyyy, xxxxId, addYyyy, editYyyy, onYyyySelect, onFormSubmitted)}
+          onSubmit={this.onSubmit(yyyy, xxxxId, addYyyyToXxxx, editYyyyInXxxx, onYyyySelect, onFormSubmitted)}
           initialValues={yyyy}
         />
         {yyyys.length > 0 && (

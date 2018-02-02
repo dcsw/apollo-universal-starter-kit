@@ -67,7 +67,7 @@ export default class Xxxx {
       });
   }
 
-  addYyyy({ content, xxxxId }) {
+  addYyyyToXxxx({ content, xxxxId }) {
     return knex('yyyy')
       .insert({ content, xxxx_id: xxxxId })
       .returning('id');
@@ -81,13 +81,13 @@ export default class Xxxx {
       .first();
   }
 
-  deleteYyyy(id) {
+  deleteYyyyFromXxxx(id) {
     return knex('yyyy')
       .where('id', '=', id)
       .del();
   }
 
-  editYyyy({ id, content }) {
+  editYyyyInXxxx({ id, content }) {
     return knex('yyyy')
       .where('id', '=', id)
       .update({

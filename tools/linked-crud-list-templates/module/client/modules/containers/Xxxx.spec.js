@@ -20,8 +20,8 @@ const createNode = id => ({
 
 const mutations = {
   editXxxx: true,
-  addYyyy: true,
-  editYyyy: true
+  addYyyyToXxxx: true,
+  editYyyyInXxxx: true
 };
 
 const mocks = {
@@ -53,7 +53,7 @@ const mocks = {
   }),
   Mutation: () => ({
     deleteXxxx: (obj, { id }) => createNode(id),
-    deleteYyyy: (obj, { input }) => input,
+    deleteYyyyFromXxxx: (obj, { input }) => input,
     ...mutations
   })
 };
@@ -254,7 +254,7 @@ describe('Xxxxs and yyyys example UI works', () => {
   });
 
   step('Yyyy adding works', done => {
-    mutations.addYyyy = (obj, { input }) => {
+    mutations.addYyyyToXxxx = (obj, { input }) => {
       expect(input.xxxxId).to.equal(3);
       expect(input.content).to.equal('Xxxx yyyy 24');
       done();
@@ -328,7 +328,7 @@ describe('Xxxxs and yyyys example UI works', () => {
   });
 
   step('Yyyy editing works', done => {
-    mutations.editYyyy = (obj, { input }) => {
+    mutations.editYyyyInXxxx = (obj, { input }) => {
       expect(input.xxxxId).to.equal(3);
       expect(input.content).to.equal('Edited yyyy 2');
       done();

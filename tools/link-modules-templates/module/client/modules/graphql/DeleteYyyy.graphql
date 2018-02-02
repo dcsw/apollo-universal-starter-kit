@@ -1,5 +1,5 @@
-mutation deleteYyyy($input: DeleteYyyyInput!) {
-    deleteYyyy(input: $input) {
+mutation deleteYyyyFromXxxx($input: DeleteYyyyFromXxxxInput!) {
+    deleteYyyyFromXxxx(input: $input) {
         id
     }
 }

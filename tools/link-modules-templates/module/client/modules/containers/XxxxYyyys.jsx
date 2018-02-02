@@ -7,12 +7,12 @@ import { reset } from 'redux-form';
 
 import XxxxYyyysView from '../components/XxxxYyyysView';
 
-import ADD_YYYY from '../graphql/AddYyyy.graphql';
-import EDIT_YYYY from '../graphql/EditYyyy.graphql';
-import DELETE_YYYY from '../graphql/DeleteYyyy.graphql';
+import ADD_YYYY_TO_XXXX from '../graphql/AddYyyy.graphql';
+import EDIT_YYYY_IN_XXXX from '../graphql/EditYyyy.graphql';
+import DELETE_YYYY_FROM_XXXX from '../graphql/DeleteYyyy.graphql';
 import YYYY_SUBSCRIPTION from '../graphql/YyyySubscription.graphql';
 
-function AddYyyy(prev, node) {
+function AddYyyyToXxxx(prev, node) {
   // ignore if duplicate
   if (node.id !== null && prev.xxxx.yyyys.some(yyyy => node.id === yyyy.id)) {
     return prev;
@@ -27,7 +27,7 @@ function AddYyyy(prev, node) {
   });
 }
 
-function DeleteYyyy(prev, id) {
+function DeleteYyyyFromXxxx(prev, id) {
   const index = prev.xxxx.yyyys.findIndex(x => x.id === id);
 
   // ignore if not found
@@ -89,9 +89,9 @@ class XxxxYyyys extends React.Component {
         let newResult = prev;
 
         if (mutation === 'CREATED') {
-          newResult = AddYyyy(prev, node);
+          newResult = AddYyyyToXxxx(prev, node);
         } else if (mutation === 'DELETED') {
-          newResult = DeleteYyyy(prev, id);
+          newResult = DeleteYyyyFromXxxx(prev, id);
         }
 
         return newResult;
@@ -105,37 +105,37 @@ class XxxxYyyys extends React.Component {
 }
 
 const XxxxYyyysWithApollo = compose(
-  graphql(ADD_YYYY, {
+  graphql(ADD_YYYY_TO_XXXX, {
     props: ({ mutate }) => ({
-      addYyyy: (content, xxxxId) =>
+      addYyyyToXxxx: (content, xxxxId) =>
         mutate({
           variables: { input: { content, xxxxId } },
           // optimisticResponse: {
           //   __typename: 'Mutation',
-          //   addYyyy: {
+          //   addYyyyToXxxx: {
           //     __typename: 'Yyyy',
           //     id: null,
           //     content: content
           //   }
           // },
           updateQueries: {
-            xxxx: (prev, { mutationResult: { data: { addYyyy } } }) => {
+            xxxx: (prev, { mutationResult: { data: { addYyyyToXxxx } } }) => {
               if (prev.xxxx) {
-                return AddYyyy(prev, addYyyy);
+                return AddYyyyToXxxx(prev, addYyyyToXxxx);
               }
             }
           }
         })
     })
   }),
-  graphql(EDIT_YYYY, {
+  graphql(EDIT_YYYY_IN_XXXX, {
     props: ({ ownProps: { xxxxId }, mutate }) => ({
-      editYyyy: (id, content) =>
+      editYyyyInXxxx: (id, content) =>
         mutate({
           variables: { input: { id, xxxxId, content } }
           // optimisticResponse: {
           //   __typename: 'Mutation',
-          //   editYyyy: {
+          //   editYyyyInXxxx: {
           //     __typename: 'Yyyy',
           //     id: id,
           //     content: content
@@ -144,22 +144,22 @@ const XxxxYyyysWithApollo = compose(
         })
     })
   }),
-  graphql(DELETE_YYYY, {
+  graphql(DELETE_YYYY_FROM_XXXX, {
     props: ({ ownProps: { xxxxId }, mutate }) => ({
-      deleteYyyy: id =>
+      deleteYyyyFromXxxx: id =>
         mutate({
           variables: { input: { id, xxxxId } },
           // optimisticResponse: {
           //   __typename: 'Mutation',
-          //   deleteYyyy: {
+          //   deleteYyyyFromXxxx: {
           //     __typename: 'Yyyy',
           //     id: id
           //   }
           // },
           updateQueries: {
-            xxxx: (prev, { mutationResult: { data: { deleteYyyy } } }) => {
+            xxxx: (prev, { mutationResult: { data: { deleteYyyyFromXxxx } } }) => {
               if (prev.xxxx) {
-                return DeleteYyyy(prev, deleteYyyy.id);
+                return DeleteYyyyFromXxxx(prev, deleteYyyy.id);
               }
             }
           }

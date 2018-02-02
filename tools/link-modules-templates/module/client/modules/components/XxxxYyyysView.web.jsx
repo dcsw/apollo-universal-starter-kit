@@ -8,9 +8,9 @@ export default class XxxxYyyysView extends React.PureComponent {
     xxxxId: PropTypes.number.isRequired,
     yyyys: PropTypes.array.isRequired,
     yyyy: PropTypes.object,
-    addYyyy: PropTypes.func.isRequired,
-    editYyyy: PropTypes.func.isRequired,
-    deleteYyyy: PropTypes.func.isRequired,
+    addYyyyToXxxx: PropTypes.func.isRequired,
+    editYyyyInXxxx: PropTypes.func.isRequired,
+    deleteYyyyFromXxxx: PropTypes.func.isRequired,
     onYyyySelect: PropTypes.func.isRequired,
     onFormSubmitted: PropTypes.func.isRequired,
     subscribeToMore: PropTypes.func.isRequired
@@ -22,22 +22,22 @@ export default class XxxxYyyysView extends React.PureComponent {
   };
 
   hendleDeleteYyyy = id => {
-    const { yyyy, onYyyySelect, deleteYyyy } = this.props;
+    const { yyyy, onYyyySelect, deleteYyyyFromXxxx } = this.props;
 
     if (yyyy.id === id) {
       onYyyySelect({ id: null, content: '' });
     }
 
-    deleteYyyy(id);
+    deleteYyyyFromXxxx(id);
   };
 
   onSubmit = () => values => {
-    const { yyyy, xxxxId, addYyyy, editYyyy, onYyyySelect, onFormSubmitted } = this.props;
+    const { yyyy, xxxxId, addYyyyToXxxx, editYyyyInXxxx, onYyyySelect, onFormSubmitted } = this.props;
 
     if (yyyy.id === null) {
-      addYyyy(values.content, xxxxId);
+      addYyyyToXxxx(values.content, xxxxId);
     } else {
-      editYyyy(yyyy.id, values.content);
+      editYyyyInXxxx(yyyy.id, values.content);
     }
 
     onYyyySelect({ id: null, content: '' });
