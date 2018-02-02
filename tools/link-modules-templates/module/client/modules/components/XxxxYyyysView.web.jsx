@@ -16,12 +16,12 @@ export default class XxxxYyyysView extends React.PureComponent {
     subscribeToMore: PropTypes.func.isRequired
   };
 
-  hendleEditYyyy = (id, content) => {
+  handleEditYyyy = (id, content) => {
     const { onYyyySelect } = this.props;
     onYyyySelect({ id, content });
   };
 
-  hendleDeleteYyyy = id => {
+  handleDeleteYyyy = id => {
     const { yyyy, onYyyySelect, deleteYyyyFromXxxx } = this.props;
 
     if (yyyy.id === id) {
@@ -63,11 +63,11 @@ export default class XxxxYyyysView extends React.PureComponent {
               color="primary"
               size="sm"
               className="edit-yyyy"
-              onClick={() => this.hendleEditYyyy(record.id, record.content)}
+              onClick={() => this.handleEditYyyy(record.id, record.content)}
             >
               Edit
             </Button>{' '}
-            <Button color="primary" size="sm" className="delete-yyyy" onClick={() => this.hendleDeleteYyyy(record.id)}>
+            <Button color="primary" size="sm" className="delete-yyyy" onClick={() => this.handleDeleteYyyy(record.id)}>
               Delete
             </Button>
           </div>

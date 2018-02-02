@@ -13,7 +13,7 @@ export default class XxxxList extends React.PureComponent {
     loadMoreRows: PropTypes.func.isRequired
   };
 
-  hendleDeleteXxxx = id => {
+  handleDeleteXxxx = id => {
     const { deleteXxxx } = this.props;
     deleteXxxx(id);
   };
@@ -72,7 +72,7 @@ export default class XxxxList extends React.PureComponent {
               color="primary"
               size="sm"
               className="delete-button"
-              onClick={() => this.hendleDeleteXxxx(record.id)}
+              onClick={() => this.handleDeleteXxxx(record.id)}
             >
               Delete
             </Button>
