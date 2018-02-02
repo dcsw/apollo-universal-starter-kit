@@ -85,17 +85,17 @@ class XxxxYyyys extends React.Component {
     this.subscription = subscribeToMore({
       document: YYYY_SUBSCRIPTION,
       variables: { xxxxId },
-      updateQuery: (prev, { subscriptionData: { data: { yyyyUpdated: { mutation, id, node } } } }) => {
-        let newResult = prev;
+      // updateQuery: (prev, { subscriptionData: { data: { yyyyUpdated: { mutation, id, node } } } }) => {
+      //   let newResult = prev;
 
-        if (mutation === 'CREATED') {
-          newResult = AddYyyyToXxxx(prev, node);
-        } else if (mutation === 'DELETED') {
-          newResult = DeleteYyyyFromXxxx(prev, id);
-        }
+      //   if (mutation === 'CREATED') {
+      //     newResult = AddYyyyToXxxx(prev, node);
+      //   } else if (mutation === 'DELETED') {
+      //     newResult = DeleteYyyyFromXxxx(prev, id);
+      //   }
 
-        return newResult;
-      }
+      //   return newResult;
+      // }
     });
   };
 
@@ -159,7 +159,7 @@ const XxxxYyyysWithApollo = compose(
           updateQueries: {
             xxxx: (prev, { mutationResult: { data: { deleteYyyyFromXxxx } } }) => {
               if (prev.xxxx) {
-                return DeleteYyyyFromXxxx(prev, deleteYyyy.id);
+                return DeleteYyyyFromXxxx(prev, deleteYyyyFromXxxx.id);
               }
             }
           }

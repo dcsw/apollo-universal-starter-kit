@@ -10,7 +10,7 @@ export default class XxxxYyyysView extends React.PureComponent {
     xxxxId: PropTypes.number.isRequired,
     yyyys: PropTypes.array.isRequired,
     yyyy: PropTypes.object,
-    addYyyyToXyyy: PropTypes.func.isRequired,
+    addYyyyToXxxx: PropTypes.func.isRequired,
     editYyyyInXxxx: PropTypes.func.isRequired,
     deleteYyyyFromXxxx: PropTypes.func.isRequired,
     onYyyySelect: PropTypes.func.isRequired,
