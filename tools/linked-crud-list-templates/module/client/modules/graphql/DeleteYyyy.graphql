@@ -1,5 +1,0 @@
-mutation deleteYyyyFromXxxx($input: DeleteYyyyFromXxxxInput!) {
-    deleteYyyyFromXxxx(input: $input) {
-        id
-    }
-}

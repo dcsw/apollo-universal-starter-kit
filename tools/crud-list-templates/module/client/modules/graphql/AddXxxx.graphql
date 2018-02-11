@@ -1,7 +1,0 @@
-#import "./XxxxInfo.graphql"
-
-mutation addXxxx($input: AddXxxxInput!) {
-    addXxxx(input: $input) {
-        ...XxxxInfo
-    }
-}
