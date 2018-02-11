@@ -340,6 +340,13 @@ module.exports = (action, args, options, logger) => {
           'SOURCE-ENTITY-TEMPLATE',
           args.srcEntityName,
           args.linkedEntityName,
+          `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
+        );
+        templateAlterFile(
+          logger,
+          'SOURCE-ENTITY-TEMPLATE',
+          args.srcEntityName,
+          args.linkedEntityName,
           `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
         );
         templateAlterFile(
@@ -356,6 +363,20 @@ module.exports = (action, args, options, logger) => {
           args.linkedEntityName,
           `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
         );
+        // templateAlterFile(
+        //   logger,
+        //   'SOURCE-ENTITY-TEMPLATE',
+        //   args.srcEntityName,
+        //   args.linkedEntityName,
+        //   `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`
+        // );
+        // templateAlterFile(
+        //   logger,
+        //   'SOURCE-ENTITY-TEMPLATE',
+        //   args.srcEntityName,
+        //   args.linkedEntityName,
+        //   `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
+        // );
 
         // Change template XXXX's and YYYY's to entity names
         fixDirFileContents(

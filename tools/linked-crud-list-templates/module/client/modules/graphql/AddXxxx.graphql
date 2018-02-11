@@ -1,5 +1,5 @@
 #import "./XxxxInfo.graphql"
-#import "./YyyyInfo.graphql"
+#import "../../yyyy/graphql/YyyyInfo.graphql"
 
 mutation addXxxx($input: AddXxxxInput!) {
     addXxxx(input: $input) {

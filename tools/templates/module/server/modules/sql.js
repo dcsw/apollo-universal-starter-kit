@@ -19,7 +19,7 @@ export default class Xxxx {
   // START-TEMPLATE-0
   // async getYyyysForXxxxIds(xxxxIds) {
   //   let res = await knex
-  //     .select('id', 'content', 'xxxx_id AS xxxxId')
+  //     .select('id', 'title', 'content', 'xxxx_id AS xxxxId')
   //     .from('yyyy')
   //     .whereIn('xxxx_id', xxxxIds);
 
@@ -71,7 +71,7 @@ export default class Xxxx {
   }
 
   // START-TEMPLATE-1
-  // addYyyyToXxxx({ content, xxxxId }) {
+  // addYyyyToXxxx({ title, content, xxxxId }) {
   //   return knex('yyyy')
   //     .insert({ content, xxxx_id: xxxxId })
   //     .returning('id');
@@ -79,7 +79,7 @@ export default class Xxxx {
 
   // getYyyy(id) {
   //   return knex
-  //     .select('id', 'content')
+  //     .select('id', 'title', 'content')
   //     .from('yyyy')
   //     .where('id', '=', id)
   //     .first();
@@ -91,7 +91,7 @@ export default class Xxxx {
   //     .del();
   // }
 
-  // editYyyyInXxxx({ id, content }) {
+  // editYyyyInXxxx({ id, title, content }) {
   //   return knex('yyyy')
   //     .where('id', '=', id)
   //     .update({

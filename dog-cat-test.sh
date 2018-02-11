@@ -5,3 +5,4 @@ yarn cli addmodule cat
 yarn cli link-modules dog cat
 rm dev-db.sqlite3
 yarn seed
+yarn watch

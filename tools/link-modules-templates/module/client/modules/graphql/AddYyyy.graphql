@@ -1,4 +1,4 @@
-#import "./YyyyInfo.graphql"
+#import "../../yyyy/graphql/YyyyInfo.graphql"
 
 mutation addYyyyToXxxx($input: AddYyyyToXxxxInput!) {
     addYyyyToXxxx(input: $input) {
