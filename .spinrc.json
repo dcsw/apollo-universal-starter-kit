@@ -6,7 +6,7 @@
     },
     "web": {
       "stack": ["react-native-web", "web"],
-      "openBrowser": true,
+      "openBrowser": false,
       "enabled": true
     },
     "android": {
