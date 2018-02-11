@@ -15,7 +15,7 @@
     },
     "ios": {
       "stack": ["react-native", "ios"],
-      "enabled": false
+      "enabled": true
     },
     "test": {
       "stack": ["react-native-web", "server"],
