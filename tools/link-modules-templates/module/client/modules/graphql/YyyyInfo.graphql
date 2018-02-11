@@ -1,4 +1,0 @@
-fragment YyyyInfo on Yyyy {
-    id
-    content
-}

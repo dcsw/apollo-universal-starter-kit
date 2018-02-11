@@ -10,7 +10,7 @@ import XxxxYyyysView from '../components/XxxxYyyysView';
 import ADD_YYYY_TO_XXXX from '../graphql/AddYyyy.graphql';
 import EDIT_YYYY_IN_XXXX from '../graphql/EditYyyy.graphql';
 import DELETE_YYYY_FROM_XXXX from '../graphql/DeleteYyyy.graphql';
-import YYYY_SUBSCRIPTION from '../graphql/YyyySubscription.graphql';
+import YYYY_SUBSCRIPTION from '../../yyyy/graphql/YyyySubscription.graphql';
 
 function AddYyyyToXxxx(prev, node) {
   // ignore if duplicate

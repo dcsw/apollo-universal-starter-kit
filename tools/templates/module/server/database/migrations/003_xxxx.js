@@ -8,7 +8,7 @@ exports.up = function(knex, Promise) {
       // START-TEMPLATE-0
       // table
       //   .integer('xxxx_id')
-      //   //.nullable()
+      //   .nullable()
       //   .unsigned()
       //   .references('id')
       //   .inTable('xxxx')
