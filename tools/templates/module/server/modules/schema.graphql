@@ -1,0 +1,131 @@
+# Xxxx
+type Xxxx {
+    id: Int!
+    title: String!
+    content: String!
+    # START-TEMPLATE-0
+    #yyyys: [Yyyy]
+    # END-TEMPLATE-0
+    # TARGET-TEMPLATE-0
+}
+
+# START-TEMPLATE-1
+### Yyyy
+##type Yyyy {
+##  id: Int!
+##  content: String!
+##}
+# END-TEMPLATE-1
+# TARGET-TEMPLATE-1
+
+# Edges for Xxxxs
+type XxxxEdges {
+    node: Xxxx
+    cursor: Int
+}
+
+# PageInfo for Xxxxs
+type XxxxPageInfo {
+    endCursor: Int
+    hasNextPage: Boolean
+}
+
+# Xxxxs relay-style pagination query
+type Xxxxs {
+    totalCount: Int
+    edges: [XxxxEdges]
+    pageInfo: XxxxPageInfo
+}
+
+extend type Query {
+    # Xxxxs pagination query
+    xxxxs(limit: Int, after: Int): Xxxxs
+    # Xxxx
+    xxxx(id: Int!): Xxxx
+}
+
+extend type Mutation {
+    # Create new xxxx
+    addXxxx(input: AddXxxxInput!): Xxxx
+    # Delete a xxxx
+    deleteXxxx(id: Int!): Xxxx
+    # Edit a xxxx
+    editXxxx(input: EditXxxxInput!): Xxxx
+    # START-TEMPLATE-2
+    ## Add yyyy to xxxx
+    #addYyyyToXxxx(input: AddYyyyToXxxxInput!): Yyyy
+    ## Delete a yyyy
+    #deleteYyyyFromXxxx(input: DeleteYyyyFromXxxxInput!): Yyyy
+    ## Edit a yyyy
+    #editYyyyInXxxx(input: EditYyyyInXxxxInput!): Yyyy
+    # END-TEMPLATE-2
+    # TARGET-TEMPLATE-2
+}
+
+# Input for addXxxx Mutation
+input AddXxxxInput {
+    title: String!
+    content: String!
+}
+
+# Input for editXxxx Mutation
+input EditXxxxInput {
+    id: Int!
+    title: String!
+    content: String!
+}
+
+# START-TEMPLATE-3
+## Input for addYyyyToXxxx Mutation
+#input AddYyyyToXxxxInput {
+#  content: String!
+#  # Needed for yyyyUpdated Subscription filter
+#  xxxxId: Int!
+#}
+#
+## Input for deleteYyyyFromXxxx Mutation
+#input DeleteYyyyFromXxxxInput {
+#  id: Int!
+#  # Needed for yyyyUpdated Subscription filter
+#  xxxxId: Int!
+#}
+#
+## Input for editYyyyInXxxx Mutation
+#input EditYyyyInXxxxInput {
+#  id: Int!
+#  content: String!
+#  # Needed for yyyyUpdated Subscription filter
+#  xxxxId: Int!
+#}
+# END-TEMPLATE-3
+# TARGET-TEMPLATE-3
+
+extend type Subscription {
+    # Subscription for when editing a xxxx
+    xxxxUpdated(id: Int!): Xxxx
+    # Subscription for xxxx list
+    xxxxsUpdated(endCursor: Int!): UpdateXxxxPayload
+    # START-TEMPLATE-4
+    ## Subscription for yyyys
+    #yyyyForXxxxUpdated(xxxxId: Int!): UpdateYyyyForXxxxPayload
+    # END-TEMPLATE-4
+    # TARGET-TEMPLATE-4
+}
+
+# Payload for xxxxsUpdated Subscription
+type UpdateXxxxPayload {
+    mutation: String!
+    id: Int!
+    node: Xxxx
+}
+
+# START-TEMPLATE-5
+## Payload for yyyyForXxxxUpdated Subscription
+#type UpdateYyyyForXxxxPayload {
+#  mutation: String!
+#  id: Int
+#  xxxxId: Int!
+#  node: Yyyy
+#}
+# END-TEMPLATE-5
+# TARGET-TEMPLATE-5

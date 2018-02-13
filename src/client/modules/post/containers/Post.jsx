@@ -156,13 +156,13 @@ export default compose(
       deletePost: id => {
         mutate({
           variables: { id },
-          optimisticResponse: {
-            __typename: 'Mutation',
-            deletePost: {
-              id: id,
-              __typename: 'Post'
-            }
-          },
+          // optimisticResponse: {
+          //   __typename: 'Mutation',
+          //   deletePost: {
+          //     id: id,
+          //     __typename: 'Post'
+          //   }
+          // },
           updateQueries: {
             posts: (prev, { mutationResult: { data: { deletePost } } }) => {
               return DeletePost(prev, deletePost.id);

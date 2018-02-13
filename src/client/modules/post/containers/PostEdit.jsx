@@ -82,16 +82,16 @@ export default compose(
       addPost: async (title, content) => {
         let postData = await mutate({
           variables: { input: { title, content } },
-          optimisticResponse: {
-            __typename: 'Mutation',
-            addPost: {
-              __typename: 'Post',
-              id: null,
-              title: title,
-              content: content,
-              comments: []
-            }
-          },
+          // optimisticResponse: {
+          //   __typename: 'Mutation',
+          //   addPost: {
+          //     __typename: 'Post',
+          //     id: null,
+          //     title: title,
+          //     content: content,
+          //     comments: []
+          //   }
+          // },
           updateQueries: {
             posts: (prev, { mutationResult: { data: { addPost } } }) => {
               return AddPost(prev, addPost);

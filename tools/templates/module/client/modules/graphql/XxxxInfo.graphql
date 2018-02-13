@@ -1,0 +1,5 @@
+fragment XxxxInfo on Xxxx {
+    id
+    title
+    content
+}

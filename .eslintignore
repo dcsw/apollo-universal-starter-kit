@@ -1,2 +1,5 @@
 flow-typed/*
 tools/templates/*
+tools/link-modules-templates/*
+tools/crud-list-templates/*
+tools/linked-crud-list-templates/*

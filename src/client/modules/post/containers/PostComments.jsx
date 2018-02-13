@@ -110,14 +110,14 @@ const PostCommentsWithApollo = compose(
       addComment: (content, postId) =>
         mutate({
           variables: { input: { content, postId } },
-          optimisticResponse: {
-            __typename: 'Mutation',
-            addComment: {
-              __typename: 'Comment',
-              id: null,
-              content: content
-            }
-          },
+          // optimisticResponse: {
+          //   __typename: 'Mutation',
+          //   addComment: {
+          //     __typename: 'Comment',
+          //     id: null,
+          //     content: content
+          //   }
+          // },
           updateQueries: {
             post: (prev, { mutationResult: { data: { addComment } } }) => {
               if (prev.post) {
@@ -132,15 +132,15 @@ const PostCommentsWithApollo = compose(
     props: ({ ownProps: { postId }, mutate }) => ({
       editComment: (id, content) =>
         mutate({
-          variables: { input: { id, postId, content } },
-          optimisticResponse: {
-            __typename: 'Mutation',
-            editComment: {
-              __typename: 'Comment',
-              id: id,
-              content: content
-            }
-          }
+          variables: { input: { id, postId, content } }
+          // optimisticResponse: {
+          //   __typename: 'Mutation',
+          //   editComment: {
+          //     __typename: 'Comment',
+          //     id: id,
+          //     content: content
+          //   }
+          // }
         })
     })
   }),
@@ -149,13 +149,13 @@ const PostCommentsWithApollo = compose(
       deleteComment: id =>
         mutate({
           variables: { input: { id, postId } },
-          optimisticResponse: {
-            __typename: 'Mutation',
-            deleteComment: {
-              __typename: 'Comment',
-              id: id
-            }
-          },
+          // optimisticResponse: {
+          //   __typename: 'Mutation',
+          //   deleteComment: {
+          //     __typename: 'Comment',
+          //     id: id
+          //   }
+          // },
           updateQueries: {
             post: (prev, { mutationResult: { data: { deleteComment } } }) => {
               if (prev.post) {
