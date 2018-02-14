@@ -52,12 +52,12 @@ export default class XxxxList extends React.PureComponent {
             this.onEndReachedCalledDuringMomentum = false;
           }}
           onEndReached={() => {
-            // if (!this.onEndReachedCalledDuringMomentum) {
+            if (!this.onEndReachedCalledDuringMomentum) {
               if (xxxxs.pageInfo.hasNextPage) {
                 this.onEndReachedCalledDuringMomentum = true;
-                return loadMoreRows();
+                return loadMoreRows().then(moreXxxxs => { this.onEndReachedCalledDuringMomentum = moreXxxxs.hasNextPage; });
               }
-            // }
+            }
           }}
         />
       );
