@@ -324,14 +324,6 @@ module.exports = (action, args, options, logger) => {
             templateAlterFile(logger, t, args.srcEntityName, args.linkedEntityName, p);
           });
         });
-        // ['TEMPLATE-1-TO-MANY-LINKED-ENTITY'].forEach(t => {
-        //   [
-        //     `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`,
-        //     `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`,
-        //   ].forEach(p => {
-        //     templateAlterFile(logger, t, args.srcEntityName, args.linkedEntityName, p);
-        //   });
-        // });
 
         // Change template XXXX's and YYYY's to entity names
         ['TEMPLATE-LINKED-ENTITY'].forEach(t => {
