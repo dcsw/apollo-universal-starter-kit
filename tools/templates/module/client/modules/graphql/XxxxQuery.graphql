@@ -1,17 +1,17 @@
 #import "./XxxxInfo.graphql"
-# START-TEMPLATE-0
+# START-TEMPLATE-LINKED-ENTITY-0
 ##import "../../yyyy/graphql/YyyyInfo.graphql"
-# END-TEMPLATE-0
-# TARGET-TEMPLATE-0
+# END-TEMPLATE-LINKED-ENTITY-0
+# TARGET-TEMPLATE-LINKED-ENTITY-0
 
 query xxxx($id: Int!) {
   xxxx(id: $id) {
     ...XxxxInfo
-# START-TEMPLATE-1
+# START-TEMPLATE-LINKED-ENTITY-1
     # yyyys {
     #   ...YyyyInfo
     # }
-# END-TEMPLATE-1
-# TARGET-TEMPLATE-1
+# END-TEMPLATE-LINKED-ENTITY-1
+# TARGET-TEMPLATE-LINKED-ENTITY-1
   }
 }

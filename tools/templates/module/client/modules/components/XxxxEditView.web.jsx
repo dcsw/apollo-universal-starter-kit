@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom';
 
 import { PageLayout } from '../../common/components/web';
 import XxxxForm from './XxxxForm';
-// START-TEMPLATE-0
+// START-TEMPLATE-LINKED-ENTITY-0
 // import XxxxYyyys from '../containers/XxxxYyyys';
-// END-TEMPLATE-0
-// TARGET-TEMPLATE-0
+// END-TEMPLATE-LINKED-ENTITY-0
+// TARGET-TEMPLATE-LINKED-ENTITY-0
 import settings from '../../../../../settings';
 
 const onSubmit = (xxxx, addXxxx, editXxxx) => values => {
@@ -57,12 +57,12 @@ const XxxxEditView = ({ loading, xxxx, match, location, subscribeToMore, addXxxx
         <XxxxForm onSubmit={onSubmit(xxxxObj, addXxxx, editXxxx)} initialValues={xxxxObj} />
         <br />
         {
-          // START-TEMPLATE-1
+          // START-TEMPLATE-LINKED-ENTITY-1
           // xxxxObj && (
           //   <XxxxYyyys xxxxId={Number(match.params.id)} yyyys={xxxxObj.yyyys} subscribeToMore={subscribeToMore} />
           // )
-          // END-TEMPLATE-1
-          // TARGET-TEMPLATE-1
+          // END-TEMPLATE-LINKED-ENTITY-1
+          // TARGET-TEMPLATE-LINKED-ENTITY-1
         }
       </PageLayout>
     );

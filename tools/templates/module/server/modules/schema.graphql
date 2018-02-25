@@ -3,20 +3,20 @@ type Xxxx {
     id: Int!
     title: String!
     content: String!
-    # START-TEMPLATE-0
+    # START-TEMPLATE-LINKED-ENTITY-0
     #yyyys: [Yyyy]
-    # END-TEMPLATE-0
-    # TARGET-TEMPLATE-0
+    # END-TEMPLATE-LINKED-ENTITY-0
+    # TARGET-TEMPLATE-LINKED-ENTITY-0
 }
 
-# START-TEMPLATE-1
+# START-TEMPLATE-LINKED-ENTITY-1
 ### Yyyy
 ##type Yyyy {
 ##  id: Int!
 ##  content: String!
 ##}
-# END-TEMPLATE-1
-# TARGET-TEMPLATE-1
+# END-TEMPLATE-LINKED-ENTITY-1
+# TARGET-TEMPLATE-LINKED-ENTITY-1
 
 # Edges for Xxxxs
 type XxxxEdges {
@@ -51,15 +51,15 @@ extend type Mutation {
     deleteXxxx(id: Int!): Xxxx
     # Edit a xxxx
     editXxxx(input: EditXxxxInput!): Xxxx
-    # START-TEMPLATE-2
+    # START-TEMPLATE-LINKED-ENTITY-2
     ## Add yyyy to xxxx
     #addYyyyToXxxx(input: AddYyyyToXxxxInput!): Yyyy
     ## Delete a yyyy
     #deleteYyyyFromXxxx(input: DeleteYyyyFromXxxxInput!): Yyyy
     ## Edit a yyyy
     #editYyyyInXxxx(input: EditYyyyInXxxxInput!): Yyyy
-    # END-TEMPLATE-2
-    # TARGET-TEMPLATE-2
+    # END-TEMPLATE-LINKED-ENTITY-2
+    # TARGET-TEMPLATE-LINKED-ENTITY-2
 }
 
 # Input for addXxxx Mutation
@@ -75,7 +75,7 @@ input EditXxxxInput {
     content: String!
 }
 
-# START-TEMPLATE-3
+# START-TEMPLATE-LINKED-ENTITY-3
 ## Input for addYyyyToXxxx Mutation
 #input AddYyyyToXxxxInput {
 #  content: String!
@@ -97,19 +97,19 @@ input EditXxxxInput {
 #  # Needed for yyyyUpdated Subscription filter
 #  xxxxId: Int!
 #}
-# END-TEMPLATE-3
-# TARGET-TEMPLATE-3
+# END-TEMPLATE-LINKED-ENTITY-3
+# TARGET-TEMPLATE-LINKED-ENTITY-3
 
 extend type Subscription {
     # Subscription for when editing a xxxx
     xxxxUpdated(id: Int!): Xxxx
     # Subscription for xxxx list
     xxxxsUpdated(endCursor: Int!): UpdateXxxxPayload
-    # START-TEMPLATE-4
+    # START-TEMPLATE-LINKED-ENTITY-4
     ## Subscription for yyyys
     #yyyyForXxxxUpdated(xxxxId: Int!): UpdateYyyyForXxxxPayload
-    # END-TEMPLATE-4
-    # TARGET-TEMPLATE-4
+    # END-TEMPLATE-LINKED-ENTITY-4
+    # TARGET-TEMPLATE-LINKED-ENTITY-4
 }
 
 # Payload for xxxxsUpdated Subscription
@@ -119,7 +119,7 @@ type UpdateXxxxPayload {
     node: Xxxx
 }
 
-# START-TEMPLATE-5
+# START-TEMPLATE-LINKED-ENTITY-5
 ## Payload for yyyyForXxxxUpdated Subscription
 #type UpdateYyyyForXxxxPayload {
 #  mutation: String!
@@ -127,5 +127,5 @@ type UpdateXxxxPayload {
 #  xxxxId: Int!
 #  node: Yyyy
 #}
-# END-TEMPLATE-5
-# TARGET-TEMPLATE-5
+# END-TEMPLATE-LINKED-ENTITY-5
+# TARGET-TEMPLATE-LINKED-ENTITY-5

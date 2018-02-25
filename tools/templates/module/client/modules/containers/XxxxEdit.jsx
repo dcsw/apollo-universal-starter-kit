@@ -89,10 +89,10 @@ export default compose(
           //     id: null,
           //     title: title,
           //     content: content,
-          // START-TEMPLATE-0
+          // START-TEMPLATE-LINKED-ENTITY-0
           ////     yyyys: []
-          // END-TEMPLATE-0
-          // TARGET-TEMPLATE-0
+          // END-TEMPLATE-LINKED-ENTITY-0
+          // TARGET-TEMPLATE-LINKED-ENTITY-0
           //   }
           // },
           updateQueries: {

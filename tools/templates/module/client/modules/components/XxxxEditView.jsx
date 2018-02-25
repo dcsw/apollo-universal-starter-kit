@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { StyleSheet, Text, View } from 'react-native';
 
 import XxxxForm from './XxxxForm';
-// START-TEMPLATE-0
+// START-TEMPLATE-LINKED-ENTITY-0
 // import XxxxYyyys from '../containers/XxxxYyyys';
-// END-TEMPLATE-0
-// TARGET-TEMPLATE-0
+// END-TEMPLATE-LINKED-ENTITY-0
+// TARGET-TEMPLATE-LINKED-ENTITY-0
 
 const onSubmit = (xxxx, addXxxx, editXxxx) => values => {
   if (xxxx) {
@@ -35,12 +35,12 @@ const XxxxEditView = ({ loading, xxxx, navigation, subscribeToMore, addXxxx, edi
       <View style={styles.container}>
         <XxxxForm onSubmit={onSubmit(xxxxObj, addXxxx, editXxxx)} initialValues={xxxxObj ? xxxxObj : {}} />
         {
-          // START-TEMPLATE-1
+          // START-TEMPLATE-LINKED-ENTITY-1
           // xxxxObj && (
           //   <XxxxYyyys xxxxId={navigation.state.params.id} yyyys={xxxxObj.yyyys} subscribeToMore={subscribeToMore} />
           // )
-          // END-TEMPLATE-1
-          // TARGET-TEMPLATE-1
+          // END-TEMPLATE-LINKED-ENTITY-1
+          // TARGET-TEMPLATE-LINKED-ENTITY-1
         }
       </View>
     );
