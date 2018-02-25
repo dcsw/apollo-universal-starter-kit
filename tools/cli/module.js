@@ -304,144 +304,89 @@ module.exports = (action, args, options, logger) => {
         ]);
 
         // Alter client GUI to include linked modules
-        templateAlterFiles(
-          logger,
-          'TEMPLATE',
-          args.srcEntityName,
-          args.linkedEntityName,
-          path.join(__dirname, '../../src/client/modules', args.srcEntityName)
-        );
-        // Alter server files to include linked modules
-        templateAlterFiles(
-          logger,
-          'TEMPLATE',
-          args.srcEntityName,
-          args.linkedEntityName,
-          path.join(__dirname, '../../src/server/modules', args.srcEntityName)
-        );
+        [
+          {
+            // Alter client GUI to include linked modules
+            template: 'TEMPLATE',
+            path: path.join(__dirname, '../../src/client/modules', args.srcEntityName)
+          },
+          {
+            // Alter server files to include linked modules
+            template: 'TEMPLATE',
+            path: path.join(__dirname, '../../src/server/modules', args.srcEntityName)
+          }
+        ].forEach(tp => {
+          templateAlterFiles(logger, tp.template, args.srcEntityName, args.linkedEntityName, tp.path);
+        });
         // Alter individual files under database to include linked modules
-        logger.info(`Template substituting ${path.join(__dirname, '../../src/server/database/')}... files…`);
-        templateAlterFile(
-          logger,
-          'TEMPLATE',
-          args.srcEntityName,
-          args.linkedEntityName,
-          `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
-        );
-        templateAlterFile(
-          logger,
-          'TEMPLATE',
-          args.srcEntityName,
-          args.linkedEntityName,
-          `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
-        );
-        templateAlterFile(
-          logger,
-          'SOURCE-ENTITY-TEMPLATE',
-          args.srcEntityName,
-          args.linkedEntityName,
-          `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
-        );
-        templateAlterFile(
-          logger,
-          'SOURCE-ENTITY-TEMPLATE',
-          args.srcEntityName,
-          args.linkedEntityName,
-          `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
-        );
-        templateAlterFile(
-          logger,
-          'TEMPLATE',
-          args.srcEntityName,
-          args.linkedEntityName,
-          `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`
-        );
-        templateAlterFile(
-          logger,
-          'TEMPLATE',
-          args.srcEntityName,
-          args.linkedEntityName,
-          `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
-        );
-        // templateAlterFile(
-        //   logger,
-        //   'SOURCE-ENTITY-TEMPLATE',
-        //   args.srcEntityName,
-        //   args.linkedEntityName,
-        //   `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`
-        // );
-        // templateAlterFile(
-        //   logger,
-        //   'SOURCE-ENTITY-TEMPLATE',
-        //   args.srcEntityName,
-        //   args.linkedEntityName,
-        //   `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
-        // );
+        [
+          {
+            // Alter individual files under database to include linked modules
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
+          },
+          {
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
+          },
+          {
+            template: 'SOURCE-ENTITY-TEMPLATE',
+            path: `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
+          },
+          {
+            template: 'SOURCE-ENTITY-TEMPLATE',
+            path: `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
+          },
+          {
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`
+          },
+          {
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
+          }
+        ].forEach(tp => {
+          templateAlterFile(logger, tp.template, args.srcEntityName, args.linkedEntityName, tp.path);
+        });
 
         // Change template XXXX's and YYYY's to entity names
-        fixDirFileContents(
-          logger,
-          'TEMPLATE',
-          `${__dirname}/../../src/client/modules/${args.srcEntityName}`,
-          makeArraySpec(args.srcEntityName, args.linkedEntityName)
-        );
-        fixDirFileContents(
-          logger,
-          'TEMPLATE',
-          `${__dirname}/../../src/server/modules/${args.srcEntityName}`,
-          makeArraySpec(args.srcEntityName, args.linkedEntityName)
-        );
+        [
+          {
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/client/modules/${args.srcEntityName}`
+          },
+          {
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/server/modules/${args.srcEntityName}`
+          }
+        ].forEach(tp => {
+          fixDirFileContents(logger, tp.template, tp.path, makeArraySpec(args.srcEntityName, args.linkedEntityName));
+        });
+
         // Change template XXXX's and YYYY's in individual files under database
         logger.info(
           `Substituting non-templated areas in ${path.join(__dirname, '../../src/server/database/')}... files…`
         );
-        fixFileContents(
-          logger,
-          'TEMPLATE',
-          `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`,
-          makeArraySpec(args.srcEntityName, args.linkedEntityName)
-        );
-        fixFileContents(
-          logger,
-          'TEMPLATE',
-          `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
-          makeArraySpec(args.srcEntityName, args.linkedEntityName)
-        );
-        fixFileContents(
-          logger,
-          'TEMPLATE',
-          `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`,
-          makeArraySpec(args.srcEntityName, args.linkedEntityName)
-        );
-        fixFileContents(
-          logger,
-          'TEMPLATE',
-          `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`,
-          makeArraySpec(args.srcEntityName, args.linkedEntityName)
-        );
-
-        // Add back reference to source entity in linked entity
-        // // get module input data
-        // const path = path.join(__dirname, '../../src/server/database/migration', args.linkedEntityName);
-        // let data = fs.readFileSync(path);
-
-        // // extract Feature modules
-        // const re = /Feature\(([^()]+)\)/g;
-        // const match = re.exec(data);
-        // if (match) {
-        //   const modules = match[1].split(',').filter(featureModule => featureModule.trim() !== module);
-
-        //   // remove import module line
-        //   const lines = data
-        //     .toString()
-        //     .split('\n')
-        //     .filter(line => line.match(`import ${module} from './${module}';`) === null);
-        //   fs.writeFileSync(path, lines.join('\n'));
-
-        //   // remove module from Feature function
-        //   shell.sed('-i', re, `Feature(${modules.toString().trim()})`, 'index.js');
-        // }
-
+        [
+          {
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
+          },
+          {
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
+          },
+          {
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`
+          },
+          {
+            template: 'TEMPLATE',
+            path: `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
+          }
+        ].forEach(tp => {
+          fixFileContents(logger, tp.template, tp.path, makeArraySpec(args.srcEntityName, args.linkedEntityName));
+        });
         break;
       case 'deletemodule':
         deleteFiles(logger, templatePath, args.module, 'server/modules');

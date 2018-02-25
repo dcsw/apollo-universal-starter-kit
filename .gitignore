@@ -13,3 +13,11 @@ npm-debug.*
 jsconfig.json
 /public
 # .env
+/src/client/modules/dog
+/src/client/modules/cat
+/src/server/modules/dog
+/src/server/modules/cat
+/src/server/database/migrations/003_dog.js
+/src/server/database/migrations/003_cat.js
+/src/server/database/seeds/003_dog.js
+/src/server/database/seeds/003_cat.js
