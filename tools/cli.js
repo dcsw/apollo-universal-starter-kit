@@ -17,6 +17,12 @@ prog
   .argument('<srcEntityName>', 'Name of the main source entity to link')
   .argument('<linkedEntityName>', 'Name of the linked entity to link')
   .argument(
+    '[type]',
+    'Where should new module be created. [many-to-many, one-way]',
+    ['many-to-many', 'one-way'],
+    'many-to-many'
+  )
+  .argument(
     '[location]',
     'Where should new module be created. [both, server, client]',
     ['both', 'server', 'client'],

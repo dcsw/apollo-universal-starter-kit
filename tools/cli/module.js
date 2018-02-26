@@ -77,26 +77,27 @@ function copyModuleFiles(logger, module, templatePath, location) {
   }
 }
 
-function templateAlterFile(logger, templateName, srcEntityName, linkedEntityName, filePath) {
+function templateAlterFile(logger, templateName, filePath) {
   // Read templates out of file
-  let contents = fs.readFileSync(filePath).toString();
+  let linesContent = fs
+    .readFileSync(filePath)
+    .toString()
+    .split('\n');
   let templates = {};
   let templateId = '';
-  contents.split('\n').forEach(l => {
+  // Find templates in file.
+  linesContent.forEach(l => {
     let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-${templateName}\\-(.+)`);
-    // if (templateName.indexOf('ENTITY') >=0) logger.info(`barf ${reStart}`);
-    // logger.info(`barf ${reStart}`)
     let matchTemplateStart = l.match(reStart);
     if (matchTemplateStart) {
       templateId = matchTemplateStart[2];
-      // logger.info(`barf ${templateName} -- in ${templateId}`);
     } else {
       if (templateId) {
         let reEnd = new RegExp(`(\\/\\/|#)\\sEND\\-${templateName}\\-(.+)`);
         let matchTemplateEnd = l.match(reEnd);
         if (matchTemplateEnd) templateId = '';
         if (templateId) {
-          // logger.info(`barf ${templateName} -- subbing ${templateId}`);
+          // Strip leading comment and store remaining text for template.
           if (!templates[templateId]) templates[templateId] = '';
           let m = l.match(/^(.*)(\/\/\s|#)(.*)/);
           if (m) templates[templateId] += `${m[1]}${m[3]}\n`;
@@ -104,9 +105,9 @@ function templateAlterFile(logger, templateName, srcEntityName, linkedEntityName
       }
     }
   });
-  // Make template-substituted output
+  // Make template-substituted output by filling in template TARGET-(s) with stored template text.
   let contentOut = '';
-  contents.split('\n').forEach(l => {
+  linesContent.forEach(l => {
     contentOut += `${l}\n`;
     let reTarget = new RegExp(`(\\/\\/|#)\\sTARGET\\-${templateName}\\-(.+)`);
     let matchTemplateTarget = l.match(reTarget);
@@ -119,23 +120,26 @@ function templateAlterFile(logger, templateName, srcEntityName, linkedEntityName
   fs.writeFileSync(filePath, contentOut);
 }
 
-function templateAlterFiles(logger, templateName, srcEntityName, linkedEntityName, destinationPath) {
+function templateAlterFiles(logger, templateName, destinationPath) {
   logger.info(`Template substituting ${destinationPath} files…`);
   // template-substitute values
   shell.ls('-Rl', destinationPath).forEach(entry => {
     let filePath = path.join(destinationPath, entry.name);
     if (entry.isFile()) {
-      templateAlterFile(logger, templateName, srcEntityName, linkedEntityName, filePath);
+      templateAlterFile(logger, templateName, filePath);
     }
   });
 }
 
-function fixFileContents(logger, templateName, filePath, arraySpec) {
+function xyNamesSubFileContents(logger, filePath, arraySpec) {
   let contentOut = '';
   // Read templates out of file
-  let contents = fs.readFileSync(filePath).toString();
+  let linesContent = fs
+    .readFileSync(filePath)
+    .toString()
+    .split('\n');
   let templateId = null;
-  contents.split('\n').forEach(l => {
+  linesContent.forEach(l => {
     let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-(\\S+)\\-(.+)`);
     let matchTemplateStart = l.match(reStart);
     if (matchTemplateStart) {
@@ -146,6 +150,7 @@ function fixFileContents(logger, templateName, filePath, arraySpec) {
         let matchTemplateEnd = l.match(reEnd);
         if (matchTemplateEnd) templateId = null;
       }
+      // !!!
       if (templateId == null) {
         arraySpec.forEach(e => {
           let re = new RegExp(e.name, 'g');
@@ -162,12 +167,12 @@ function fixFileContents(logger, templateName, filePath, arraySpec) {
   fs.writeFileSync(filePath, contentOut);
 }
 
-function fixDirFileContents(logger, templateName, destinationPath, arraySpec) {
+function xyNamesSubDirFileContents(logger, destinationPath, arraySpec) {
   logger.info(`Substituting non-templated areas in ${destinationPath} files…`);
   shell.ls('-Rl', destinationPath).forEach(entry => {
     if (entry.isFile()) {
       let filePath = path.join(destinationPath, entry.name);
-      fixFileContents(logger, templateName, filePath, arraySpec);
+      xyNamesSubFileContents(logger, filePath, arraySpec);
     }
   });
 }
@@ -236,9 +241,8 @@ module.exports = (action, args, options, logger) => {
       case 'add-crud-list-module':
       case 'add-linked-crud-list-module':
         copyModuleFiles(logger, args.module, templatePath, 'client/modules');
-        fixDirFileContents(
+        xyNamesSubDirFileContents(
           logger,
-          'TEMPLATE-LINKED-ENTITY',
           `${__dirname}/../../src/client/modules/${args.module}`,
           makeArraySpec(args.module, null)
         );
@@ -254,9 +258,8 @@ module.exports = (action, args, options, logger) => {
     switch (action) {
       case 'addmodule':
         copyModuleFiles(logger, args.module, templatePath, 'server/modules');
-        fixDirFileContents(
+        xyNamesSubDirFileContents(
           logger,
-          'TEMPLATE-LINKED-ENTITY',
           `${__dirname}/../../src/server/modules/${args.module}`,
           makeArraySpec(args.module, null)
         );
@@ -267,90 +270,85 @@ module.exports = (action, args, options, logger) => {
             `${templatePath}/server/database/*`,
             `${__dirname}/../../src/server/database`
           );
-          fixDirFileContents(
+          xyNamesSubDirFileContents(
             logger,
-            'TEMPLATE-LINKED-ENTITY',
             `${__dirname}/../../src/server/database/migrations/`,
             makeArraySpec(args.module, null)
           );
-          fixDirFileContents(
+          xyNamesSubDirFileContents(
             logger,
-            'TEMPLATE-LINKED-ENTITY',
             `${__dirname}/../../src/server/database/seeds/`,
             makeArraySpec(args.module, null)
           );
         }
         break;
       case 'link-modules':
-        // Add files to client module
-        copyfixFileNames(
-          logger,
-          args.srcEntityName,
-          path.join(templatePath, 'client/modules/*'),
-          path.join(__dirname, '../../src/client/modules', args.srcEntityName)
-        );
-        fixFileNames(path.join(__dirname, '../../src/client/modules', args.srcEntityName), args.linkedEntityName, [
-          { name: 'yyyy', newName: args.linkedEntityName },
-          { name: 'Yyyy', newName: args.linkedEntityName.capitalize() },
-          { name: 'YYYY', newName: args.linkedEntityName.toUpperCase() }
-        ]);
-
-        // Alter client & server to include module links
-        ['TEMPLATE-LINKED-ENTITY', 'TEMPLATE-1-TO-MANY-LINKED-ENTITY'].forEach(t => {
-          [
-            path.join(__dirname, '../../src/client/modules', args.srcEntityName),
-            path.join(__dirname, '../../src/server/modules', args.srcEntityName)
-          ].forEach(p => {
-            templateAlterFiles(logger, t, args.srcEntityName, args.linkedEntityName, p);
-          });
-        });
-
-        // Alter individual files under database to include linked modules
-        ['TEMPLATE-LINKED-ENTITY', 'TEMPLATE-1-TO-MANY-LINKED-ENTITY'].forEach(t => {
-          [
-            `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`,
-            `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
-            `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`,
-            `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
-          ].forEach(p => {
-            templateAlterFile(logger, t, args.srcEntityName, args.linkedEntityName, p);
-          });
-        });
-        ['SEED-1-TO-MANY-LINKED-ENTITY-TEMPLATE'].forEach(t => {
-          [
-            `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`,
-            `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
-          ].forEach(p => {
-            templateAlterFile(logger, t, args.srcEntityName, args.linkedEntityName, p);
-          });
-        });
-
-        // Change template XXXX's and YYYY's to entity names
-        ['TEMPLATE-LINKED-ENTITY'].forEach(t => {
-          [
+        {
+          let relType = null,
+            seedType = null;
+          if (args.type == 'one-way') {
+            relType = 'TEMPLATE-1-TO-MANY-LINKED-ENTITY';
+            seedType = 'SEED-1-TO-MANY-LINKED-ENTITY-TEMPLATE';
+          } else {
+            relType = 'TEMPLATE-MANY-TO-MANY-LINKED-ENTITY';
+            seedType = 'SEED-MANY-TO-MANY-LINKED-ENTITY-TEMPLATE';
+          }
+          let moduleDirs = [
             `${__dirname}/../../src/client/modules/${args.srcEntityName}`,
             `${__dirname}/../../src/server/modules/${args.srcEntityName}`
-          ].forEach(p => {
-            fixDirFileContents(logger, t, p, makeArraySpec(args.srcEntityName, args.linkedEntityName));
-          });
-        });
-
-        // Change template XXXX's and YYYY's in individual files under database
-        logger.info(
-          `Substituting non-templated areas in ${path.join(__dirname, '../../src/server/database/')}... files…`
-        );
-
-        ['TEMPLATE-LINKED-ENTITY'].forEach(t => {
-          [
+          ];
+          let dbFiles = [
             `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`,
             `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
             `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`,
             `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
-          ].forEach(p => {
-            fixFileContents(logger, t, p, makeArraySpec(args.srcEntityName, args.linkedEntityName));
-          });
-        });
+          ];
+          let dbSeedSrcEntityFiles = [
+            `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`,
+            `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
+          ];
 
+          // Add files to client module
+          copyfixFileNames(
+            logger,
+            args.srcEntityName,
+            path.join(templatePath, 'client/modules/*'),
+            path.join(__dirname, '../../src/client/modules', args.srcEntityName)
+          );
+          fixFileNames(path.join(__dirname, '../../src/client/modules', args.srcEntityName), args.linkedEntityName, [
+            { name: 'yyyy', newName: args.linkedEntityName },
+            { name: 'Yyyy', newName: args.linkedEntityName.capitalize() },
+            { name: 'YYYY', newName: args.linkedEntityName.toUpperCase() }
+          ]);
+
+          // Template expand client & server files
+          ['TEMPLATE-LINKED-ENTITY', relType].forEach(t => {
+            moduleDirs.forEach(p => {
+              templateAlterFiles(logger, t, p);
+            });
+          });
+          // Handle individual files under database to include linked modules
+          ['TEMPLATE-LINKED-ENTITY', relType].forEach(t => {
+            dbFiles.forEach(p => {
+              templateAlterFile(logger, t, p);
+            });
+          });
+          [seedType].forEach(t => {
+            dbSeedSrcEntityFiles.forEach(p => {
+              templateAlterFile(logger, t, p);
+            });
+          });
+
+          // Change template XXXX's and YYYY's to entity names
+          logger.info(`Substituting non-templated areas in all scaffolded files…`);
+          moduleDirs.forEach(p => {
+            xyNamesSubDirFileContents(logger, p, makeArraySpec(args.srcEntityName, args.linkedEntityName));
+          });
+          // Handle individual files under database
+          dbFiles.forEach(p => {
+            xyNamesSubFileContents(logger, p, makeArraySpec(args.srcEntityName, args.linkedEntityName));
+          });
+        }
         break;
       case 'deletemodule':
         deleteFiles(logger, templatePath, args.module, 'server/modules');

@@ -28,6 +28,18 @@ export default class Xxxx {
   // END-TEMPLATE-1-TO-MANY-LINKED-ENTITY-0
   // TARGET-TEMPLATE-1-TO-MANY-LINKED-ENTITY-0
 
+  // START-TEMPLATE-MANY-TO-MANY-LINKED-ENTITY-0
+  // async getYyyysForXxxxIds(xxxxIds) {
+  //   let res = await knex
+  //     .select('yyyy.id', 'yyyy.title', 'yyyy.content', 'xxxx_yyyy.xxxx_id AS xxxxId')
+  //     .from('xxxx_yyyy')
+  //     .whereIn('xxxx_yyyy.xxxx_id', xxxxIds)
+  //     .innerJoin('yyyy', 'xxxx_yyyy.yyyy_id', 'yyyy.id')
+  //   return orderedFor(res, xxxxIds, 'xxxxId', false);
+  // }
+  // END-TEMPLATE-MANY-TO-MANY-LINKED-ENTITY-0
+  // TARGET-TEMPLATE-MANY-TO-MANY-LINKED-ENTITY-0
+
   getTotal() {
     return knex('xxxx')
       .countDistinct('id as count')
@@ -100,4 +112,48 @@ export default class Xxxx {
   // }
   // END-TEMPLATE-1-TO-MANY-LINKED-ENTITY-1
   // TARGET-TEMPLATE-1-TO-MANY-LINKED-ENTITY-1
+
+  // START-TEMPLATE-MANY-TO-MANY-LINKED-ENTITY-1
+  // addYyyyToXxxx({ title, content, xxxxId }) {
+  //   return knex('yyyy')
+  //     .insert({ content })
+  //     .returning('id')
+  //     .map(yyyyIds => {
+  //       return knex('xxxx_yyyy')
+  //           .returning('id')
+  //           .insert({
+  //             xxxx_id: xxxxId,
+  //             yyyy_id: yyyyIds[0]
+  //           })
+  //     });
+  // }
+
+  // getYyyy(id) {
+  //   return knex
+  //     .select('id', 'title', 'content')
+  //     .from('yyyy')
+  //     .where('id', '=', id)
+  //     .first();
+  // }
+
+  // deleteYyyyFromXxxx(id) {
+  //   return knex('yyyy')
+  //     .where('id', '=', id)
+  //     .del()
+  //     .map(yyyyIds => {
+  //       knex('xxxx_yyyy')
+  //       .where('yyyy_id', '=', id)
+  //       .del()
+  //     })
+  // }
+
+  // editYyyyInXxxx({ id, title, content }) {
+  //   return knex('yyyy')
+  //     .where('id', '=', id)
+  //     .update({
+  //       content: content
+  //     });
+  // }
+  // END-TEMPLATE-MANY-TO-MANY-LINKED-ENTITY-1
+  // TARGET-TEMPLATE-MANY-TO-MANY-LINKED-ENTITY-1
 }

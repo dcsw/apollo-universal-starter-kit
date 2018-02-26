@@ -2,7 +2,7 @@ import { truncateTables } from '../../sql/helpers';
 
 export async function seed(knex, Promise) {
   await truncateTables(knex, Promise, [
-    'xxxx',
+    'xxxx'
     // START-TEMPLATE-LINKED-ENTITY-0
     // // 'yyyy',
     // END-TEMPLATE-LINKED-ENTITY-0
@@ -32,6 +32,28 @@ export async function seed(knex, Promise) {
       // );
       // END-SEED-1-TO-MANY-LINKED-ENTITY-TEMPLATE-1
       // TARGET-SEED-1-TO-MANY-LINKED-ENTITY-TEMPLATE-1
+      // START-SEED-MANY-TO-MANY-LINKED-ENTITY-TEMPLATE-1
+      // await Promise.all(
+      //   [...Array(2).keys()].map(async jj => {
+      //     // const yyyy = await knex('yyyy')
+      //     return await knex('yyyy')
+      //       .returning('id')
+      //       .insert({
+      //         title: `Yyyy title ${jj + 1} for xxxx ${xxxx[0]}`,
+      //         content: `Yyyy content ${jj + 1} for xxxx ${xxxx[0]}`
+      //       })
+      //       .then(yyyyIds => {
+      //         return knex('xxxx_yyyy')
+      //         .returning('xxxx_yyyy.yyyy_id')
+      //         .insert({
+      //           xxxx_id: xxxx[0],
+      //           yyyy_id: yyyyIds[0]
+      //         })
+      //       })
+      //   })
+      // );
+      // END-SEED-MANY-TO-MANY-LINKED-ENTITY-TEMPLATE-1
+      // TARGET-SEED-MANY-TO-MANY-LINKED-ENTITY-TEMPLATE-1
     })
   );
 }
