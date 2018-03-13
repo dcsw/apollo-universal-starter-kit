@@ -13,7 +13,7 @@ prog
   )
   .action((args, options, logger) => moduleCmd('addmodule', args, options, logger))
 
-  .command('link-modules', 'Link 2 existing modules')
+  .command('link-modules', 'Link to existing modules')
   .argument('<srcEntityName>', 'Name of the main source entity to link')
   .argument('<linkedEntityName>', 'Name of the linked entity to link')
   .argument(
