@@ -23,6 +23,7 @@
     "heroku-postbuild": "rm -rf build && spin exp login -u $EXP_USERNAME -p $EXP_PASSWORD --non-interactive && spin -c .spinrc.prod.json build && spin exp p --non-interactive && npm run seed",
     "precommit": "lint-staged",
     "cli": "node tools/cli",
+    "test-caporal": "node tools/test-caporal",
     "postinstall": "opencollective postinstall",
     "stripe:setup": "node src/server/modules/subscription/cli/stripeSetup"
   },

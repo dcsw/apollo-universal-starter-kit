@@ -10,7 +10,7 @@ export async function seed(knex, Promise) {
   ]);
 
   await Promise.all(
-    [...Array(20).keys()].map(async ii => {
+    [...Array(SEED_COUNT).keys()].map(async ii => {
       const xxxx = await knex('xxxx')
         .returning('id')
         .insert({
@@ -20,7 +20,7 @@ export async function seed(knex, Promise) {
 
       // START-SEED-1-TO-MANY-LINKED-ENTITY-TEMPLATE-1
       // await Promise.all(
-      //   [...Array(2).keys()].map(async jj => {
+      //   [...Array(LINKED_SEED_COUNT).keys()].map(async jj => {
       //     return knex('yyyy')
       //       .returning('id')
       //       .insert({
@@ -34,8 +34,7 @@ export async function seed(knex, Promise) {
       // TARGET-SEED-1-TO-MANY-LINKED-ENTITY-TEMPLATE-1
       // START-SEED-MANY-TO-MANY-LINKED-ENTITY-TEMPLATE-1
       // await Promise.all(
-      //   [...Array(2).keys()].map(async jj => {
-      //     // const yyyy = await knex('yyyy')
+      //   [...Array(LINKED_SEED_COUNT).keys()].map(async jj => {
       //     return await knex('yyyy')
       //       .returning('id')
       //       .insert({

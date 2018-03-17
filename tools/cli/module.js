@@ -33,6 +33,11 @@ function makeArraySpec(srcEntityName, linkedEntityName) {
   ];
 }
 
+function makeArraySeedsSpec(seed_count, linked_seed_count) {
+  // Order is important for substitutions in this array.
+  return [{ name: 'LINKED_SEED_COUNT', newName: linked_seed_count }, { name: 'SEED_COUNT', newName: seed_count }];
+}
+
 function fixFileNames(destinationPath, srcEntityName, arraySpec) {
   shell.ls('-Rl', destinationPath).forEach(entry => {
     if (entry.isFile()) {
@@ -77,15 +82,16 @@ function copyModuleFiles(logger, module, templatePath, location) {
   }
 }
 
+// Expand out templated text, defined between START_ and END_ tags, into TARGET_ areas.
 function templateAlterFile(logger, templateName, filePath) {
-  // Read templates out of file
+  // Read file
   let linesContent = fs
     .readFileSync(filePath)
     .toString()
     .split('\n');
+  // Find templates in file.
   let templates = {};
   let templateId = '';
-  // Find templates in file.
   linesContent.forEach(l => {
     let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-${templateName}\\-(.+)`);
     let matchTemplateStart = l.match(reStart);
@@ -131,13 +137,15 @@ function templateAlterFiles(logger, templateName, destinationPath) {
   });
 }
 
-function xyNamesSubFileContents(logger, filePath, arraySpec) {
+// Name correct by spec (eg. XXXX and YYYY), but only outside of templates.
+function specCorrectAlterTemplateText(logger, filePath, arraySpec) {
   let contentOut = '';
-  // Read templates out of file
+  // Read file
   let linesContent = fs
     .readFileSync(filePath)
     .toString()
     .split('\n');
+  // Gather templates
   let templateId = null;
   linesContent.forEach(l => {
     let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-(\\S+)\\-(.+)`);
@@ -150,7 +158,7 @@ function xyNamesSubFileContents(logger, filePath, arraySpec) {
         let matchTemplateEnd = l.match(reEnd);
         if (matchTemplateEnd) templateId = null;
       }
-      // !!!
+      // Only spec-substitute when outside templates
       if (templateId == null) {
         arraySpec.forEach(e => {
           let re = new RegExp(e.name, 'g');
@@ -172,7 +180,7 @@ function xyNamesSubDirFileContents(logger, destinationPath, arraySpec) {
   shell.ls('-Rl', destinationPath).forEach(entry => {
     if (entry.isFile()) {
       let filePath = path.join(destinationPath, entry.name);
-      xyNamesSubFileContents(logger, filePath, arraySpec);
+      specCorrectAlterTemplateText(logger, filePath, arraySpec);
     }
   });
 }
@@ -238,8 +246,6 @@ module.exports = (action, args, options, logger) => {
   if (args.location === 'client' || args.location === 'both') {
     switch (action) {
       case 'addmodule':
-      case 'add-crud-list-module':
-      case 'add-linked-crud-list-module':
         copyModuleFiles(logger, args.module, templatePath, 'client/modules');
         xyNamesSubDirFileContents(
           logger,
@@ -257,12 +263,14 @@ module.exports = (action, args, options, logger) => {
   if (args.location === 'server' || args.location === 'both') {
     switch (action) {
       case 'addmodule':
+        // Create server module files
         copyModuleFiles(logger, args.module, templatePath, 'server/modules');
         xyNamesSubDirFileContents(
           logger,
           `${__dirname}/../../src/server/modules/${args.module}`,
           makeArraySpec(args.module, null)
         );
+        // Create out server database files, if there are any in the template dir.
         if (fs.existsSync(`${templatePath}/server/database`)) {
           copyfixFileNames(
             logger,
@@ -270,43 +278,47 @@ module.exports = (action, args, options, logger) => {
             `${templatePath}/server/database/*`,
             `${__dirname}/../../src/server/database`
           );
-          xyNamesSubDirFileContents(
-            logger,
+          [
             `${__dirname}/../../src/server/database/migrations/`,
-            makeArraySpec(args.module, null)
-          );
-          xyNamesSubDirFileContents(
-            logger,
-            `${__dirname}/../../src/server/database/seeds/`,
-            makeArraySpec(args.module, null)
-          );
+            `${__dirname}/../../src/server/database/seeds/`
+          ].forEach(dir => {
+            xyNamesSubDirFileContents(logger, dir, makeArraySpec(args.module, null));
+          });
+        }
+
+        if (!options.noSeedCount) {
+          // Change seed counts
+          logger.info(`Setting seed counts`);
+          let seedFiles = [`${__dirname}/../../src/server/database/seeds/003_${args.module}.js`];
+          seedFiles.forEach(s => {
+            specCorrectAlterTemplateText(logger, s, makeArraySeedsSpec(options.seedCount, options.linkedSeedCount));
+          });
         }
         break;
       case 'link-modules':
         {
-          let relType = null,
+          let linkedRelationType = null,
             seedType = null;
           if (args.type == 'one-way') {
-            relType = 'TEMPLATE-1-TO-MANY-LINKED-ENTITY';
+            linkedRelationType = 'TEMPLATE-1-TO-MANY-LINKED-ENTITY';
             seedType = 'SEED-1-TO-MANY-LINKED-ENTITY-TEMPLATE';
           } else {
-            relType = 'TEMPLATE-MANY-TO-MANY-LINKED-ENTITY';
+            linkedRelationType = 'TEMPLATE-MANY-TO-MANY-LINKED-ENTITY';
             seedType = 'SEED-MANY-TO-MANY-LINKED-ENTITY-TEMPLATE';
           }
           let moduleDirs = [
             `${__dirname}/../../src/client/modules/${args.srcEntityName}`,
             `${__dirname}/../../src/server/modules/${args.srcEntityName}`
           ];
-          let dbFiles = [
+          let migrationFiles = [
             `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`,
+            `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`
+          ];
+          let seedFiles = [
             `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
-            `${__dirname}/../../src/server/database/migrations/003_${args.linkedEntityName}.js`,
             `${__dirname}/../../src/server/database/seeds/003_${args.linkedEntityName}.js`
           ];
-          let dbSeedSrcEntityFiles = [
-            `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`,
-            `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`
-          ];
+          let dbFiles = [...migrationFiles, ...seedFiles];
 
           // Add files to client module
           copyfixFileNames(
@@ -322,32 +334,39 @@ module.exports = (action, args, options, logger) => {
           ]);
 
           // Template expand client & server files
-          ['TEMPLATE-LINKED-ENTITY', relType].forEach(t => {
+          ['TEMPLATE-LINKED-ENTITY', linkedRelationType].forEach(t => {
             moduleDirs.forEach(p => {
               templateAlterFiles(logger, t, p);
             });
           });
           // Handle individual files under database to include linked modules
-          ['TEMPLATE-LINKED-ENTITY', relType].forEach(t => {
+          ['TEMPLATE-LINKED-ENTITY', linkedRelationType].forEach(t => {
             dbFiles.forEach(p => {
               templateAlterFile(logger, t, p);
             });
           });
-          [seedType].forEach(t => {
-            dbSeedSrcEntityFiles.forEach(p => {
-              templateAlterFile(logger, t, p);
-            });
+          // Add linked entity generation to source entity
+          [
+            `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
+            `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
+          ].forEach(f => {
+            templateAlterFile(logger, seedType, f);
           });
-
           // Change template XXXX's and YYYY's to entity names
           logger.info(`Substituting non-templated areas in all scaffolded files…`);
           moduleDirs.forEach(p => {
             xyNamesSubDirFileContents(logger, p, makeArraySpec(args.srcEntityName, args.linkedEntityName));
           });
-          // Handle individual files under database
-          dbFiles.forEach(p => {
-            xyNamesSubFileContents(logger, p, makeArraySpec(args.srcEntityName, args.linkedEntityName));
+          dbFiles.forEach(f => {
+            specCorrectAlterTemplateText(logger, f, makeArraySpec(args.srcEntityName, args.linkedEntityName));
           });
+
+          if (!options.noSeedCount) {
+            // Handle individual files under database
+            seedFiles.forEach(p => {
+              specCorrectAlterTemplateText(logger, p, makeArraySeedsSpec(options.seedCount, options.linkedSeedCount));
+            });
+          }
         }
         break;
       case 'deletemodule':
@@ -363,5 +382,20 @@ module.exports = (action, args, options, logger) => {
         );
         break;
     }
+  }
+
+  let seedFiles = [];
+  switch (action) {
+    case 'set-seed-counts':
+      // Change seed counts
+
+      args.srcModules.forEach(m => {
+        seedFiles.push(`${__dirname}/../../src/server/database/seeds/003_${m}.js`);
+      });
+      logger.info(`Setting seed counts for ${args.srcModules} (${seedFiles})`);
+      seedFiles.forEach(s => {
+        specCorrectAlterTemplateText(logger, s, makeArraySeedsSpec(options.seedCount, options.linkedSeedCount));
+      });
+      break;
   }
 };
