@@ -33,10 +33,10 @@ function makeArraySpec(srcEntityName, linkedEntityName) {
   ];
 }
 
-function makeArraySeedsSpec(seed_count, linked_seed_count) {
-  // Order is important for substitutions in this array.
-  return [{ name: 'LINKED_SEED_COUNT', newName: linked_seed_count }, { name: 'SEED_COUNT', newName: seed_count }];
-}
+// function makeArraySeedsSpec(seed_count, linked_seed_count) {
+//   // Order is important for substitutions in this array.
+//   return [{ name: 'LINKED_SEED_COUNT', newName: linked_seed_count }, { name: 'SEED_COUNT', newName: seed_count }];
+// }
 
 function fixFileNames(destinationPath, srcEntityName, arraySpec) {
   shell.ls('-Rl', destinationPath).forEach(entry => {
@@ -91,34 +91,91 @@ function templateAlterFile(logger, templateName, filePath) {
     .split('\n');
   // Find templates in file.
   let templates = {};
-  let templateId = '';
+  let activeTemplateIds = []; // manage template nesting
+  // let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-(${templateName}\\-.+)`);
+  let reStartAnyTemplate = new RegExp(`(\\/\\/|#)\\sSTART\\-(.+\\-.+)`);
+  // let reEnd = new RegExp(`(\\/\\/|#)\\sEND\\-(${templateName}\\-.+)`);
+  let reEndAnyTemplate = new RegExp(`(\\/\\/|#)\\sEND\\-(.+\\-.+)`);
+  let reTarget = new RegExp(`(\\/\\/|#)\\sTARGET\\-(${templateName}\\-.+)`);
+  // let reTargetAnyTemplate = new RegExp(`(\\/\\/|#)\\sTARGET\\-(.+\\-.+)`);
+  let reTemplatePrefixComment = new RegExp('^(\\s*)(\\/\\/\\s|#)(.*)');
   linesContent.forEach(l => {
-    let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-${templateName}\\-(.+)`);
-    let matchTemplateStart = l.match(reStart);
+    let matchTemplateStart = l.match(reStartAnyTemplate);
     if (matchTemplateStart) {
-      templateId = matchTemplateStart[2];
+      activeTemplateIds.push(matchTemplateStart[2]); // track template nesting
     } else {
-      if (templateId) {
-        let reEnd = new RegExp(`(\\/\\/|#)\\sEND\\-${templateName}\\-(.+)`);
-        let matchTemplateEnd = l.match(reEnd);
-        if (matchTemplateEnd) templateId = '';
-        if (templateId) {
-          // Strip leading comment and store remaining text for template.
-          if (!templates[templateId]) templates[templateId] = '';
-          let m = l.match(/^(.*)(\/\/\s|#)(.*)/);
-          if (m) templates[templateId] += `${m[1]}${m[3]}\n`;
-        }
-      }
+      activeTemplateIds
+        .slice()
+        .reverse()
+        .forEach(templateId => {
+          // work with greatest nested templates first
+          let matchTemplateEnd = l.match(reEndAnyTemplate);
+          if (matchTemplateEnd) {
+            let idx = activeTemplateIds.indexOf(matchTemplateEnd[2]);
+            if (idx >= 0) {
+              activeTemplateIds.splice(idx, 1); // remote template whose end has just been found
+            }
+          }
+          if (Object.keys(activeTemplateIds).length > 0) {
+            // still in a template, nested or otherwise
+            let templateId = activeTemplateIds[activeTemplateIds.length - 1];
+            if (!templates[templateId]) templates[templateId] = ''; // start new template text if there is none yet
+          }
+          templates[templateId] += `${l}\n`;
+        });
     }
   });
   // Make template-substituted output by filling in template TARGET-(s) with stored template text.
+  let expandTemplate = function(templateText) {
+    console.log(`yarf ${templateText}`);
+    let contentOut = '';
+    // Manage template nesting
+    let nestedTemplates = [];
+    templateText.split('\n').forEach(l => {
+      let matchTemplateStart = l.match(reStartAnyTemplate);
+      if (matchTemplateStart) {
+        nestedTemplates.push(matchTemplateStart[2]); // track template nesting
+      } else {
+        let matchTemplateEnd = l.match(reEndAnyTemplate);
+        if (matchTemplateEnd) {
+          let idx = nestedTemplates.indexOf(matchTemplateEnd[2]);
+          if (idx >= 0) {
+            nestedTemplates.splice(idx, 1); // remote template whose end has just been found
+          }
+        }
+      }
+      let m = l.match(reTemplatePrefixComment);
+      if (m) {
+        contentOut += `${m[1]}${m[3]}\n`; // append text to active template
+      } else {
+        contentOut += `${l}\n`;
+      }
+    });
+    return contentOut;
+  };
+  // Now create content with expanded templates
   let contentOut = '';
   linesContent.forEach(l => {
     contentOut += `${l}\n`;
-    let reTarget = new RegExp(`(\\/\\/|#)\\sTARGET\\-${templateName}\\-(.+)`);
-    let matchTemplateTarget = l.match(reTarget);
-    if (matchTemplateTarget) {
-      contentOut += `${templates[matchTemplateTarget[2]]}\n`;
+    let matchTemplateStart = l.match(reStartAnyTemplate);
+    // Manage template nesting
+    if (matchTemplateStart) {
+      activeTemplateIds.push(matchTemplateStart[2]); // track template nesting
+    } else {
+      let matchTemplateEnd = l.match(reEndAnyTemplate);
+      if (matchTemplateEnd) {
+        let idx = activeTemplateIds.indexOf(matchTemplateEnd[2]);
+        if (idx >= 0) {
+          activeTemplateIds.splice(idx, 1); // remote template whose end has just been found
+        }
+      }
+    }
+    if (activeTemplateIds.length == 0) {
+      // Not in a template definition
+      let matchTemplateTarget = l.match(reTarget);
+      if (matchTemplateTarget) {
+        contentOut += expandTemplate(templates[matchTemplateTarget[2]]);
+      }
     }
   });
   contentOut = contentOut.substring(0, contentOut.length - 1);
@@ -278,6 +335,11 @@ module.exports = (action, args, options, logger) => {
             `${templatePath}/server/database/*`,
             `${__dirname}/../../src/server/database`
           );
+          // Template expand seed template
+          logger.info(`Adding seeds`);
+          [`${__dirname}/../../src/server/database/seeds/003_${args.module}.js`].forEach(f => {
+            templateAlterFile(logger, 'SEED-TEMPLATE', f);
+          });
           [
             `${__dirname}/../../src/server/database/migrations/`,
             `${__dirname}/../../src/server/database/seeds/`
@@ -286,14 +348,16 @@ module.exports = (action, args, options, logger) => {
           });
         }
 
-        if (!options.noSeedCount) {
-          // Change seed counts
+        // Optionally deal with seeds
+        if (options.seedCount) {
+          // Add seeds
           logger.info(`Setting seed counts`);
           let seedFiles = [`${__dirname}/../../src/server/database/seeds/003_${args.module}.js`];
           seedFiles.forEach(s => {
-            specCorrectAlterTemplateText(logger, s, makeArraySeedsSpec(options.seedCount, options.linkedSeedCount));
+            specCorrectAlterTemplateText(logger, s, [{ name: 'SEED_COUNT', newName: options.seedCount }]);
           });
         }
+
         break;
       case 'link-modules':
         {
@@ -361,10 +425,15 @@ module.exports = (action, args, options, logger) => {
             specCorrectAlterTemplateText(logger, f, makeArraySpec(args.srcEntityName, args.linkedEntityName));
           });
 
-          if (!options.noSeedCount) {
-            // Handle individual files under database
-            seedFiles.forEach(p => {
-              specCorrectAlterTemplateText(logger, p, makeArraySeedsSpec(options.seedCount, options.linkedSeedCount));
+          // Optionally deal with seeds
+          if (options.linkedSeedCount) {
+            // Add linked seeds
+            logger.info(`Setting linked seed counts`);
+            let seedFiles = [`${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`];
+            seedFiles.forEach(s => {
+              specCorrectAlterTemplateText(logger, s, [
+                { name: 'LINKED_SEED_COUNT', newName: options.linkedSeedCount }
+              ]);
             });
           }
         }
@@ -384,18 +453,18 @@ module.exports = (action, args, options, logger) => {
     }
   }
 
-  let seedFiles = [];
-  switch (action) {
-    case 'set-seed-counts':
-      // Change seed counts
+  // let seedFiles = [];
+  // switch (action) {
+  //   case 'set-seed-counts':
+  //     // Change seed counts
 
-      args.srcModules.forEach(m => {
-        seedFiles.push(`${__dirname}/../../src/server/database/seeds/003_${m}.js`);
-      });
-      logger.info(`Setting seed counts for ${args.srcModules} (${seedFiles})`);
-      seedFiles.forEach(s => {
-        specCorrectAlterTemplateText(logger, s, makeArraySeedsSpec(options.seedCount, options.linkedSeedCount));
-      });
-      break;
-  }
+  //     args.srcModules.forEach(m => {
+  //       seedFiles.push(`${__dirname}/../../src/server/database/seeds/003_${m}.js`);
+  //     });
+  //     logger.info(`Setting seed counts for ${args.srcModules} (${seedFiles})`);
+  //     seedFiles.forEach(s => {
+  //       specCorrectAlterTemplateText(logger, s, makeArraySeedsSpec(options.seedCount, options.linkedSeedCount));
+  //     });
+  //     break;
+  // }
 };

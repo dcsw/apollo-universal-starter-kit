@@ -15,9 +15,13 @@ jsconfig.json
 # .env
 /src/client/modules/dog
 /src/client/modules/cat
+/src/client/modules/mouse
 /src/server/modules/dog
 /src/server/modules/cat
+/src/server/modules/mouse
 /src/server/database/migrations/003_dog.js
 /src/server/database/migrations/003_cat.js
+/src/server/database/migrations/003_mouse.js
 /src/server/database/seeds/003_dog.js
 /src/server/database/seeds/003_cat.js
+/src/server/database/seeds/003_mouse.js
