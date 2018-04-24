@@ -102,32 +102,27 @@ function templateAlterFile(logger, templateName, filePath) {
   linesContent.forEach(l => {
     let matchTemplateStart = l.match(reStartAnyTemplate);
     if (matchTemplateStart) {
-      activeTemplateIds.push(matchTemplateStart[2]); // track template nesting
-    } else {
-      activeTemplateIds
-        .slice()
-        .reverse()
-        .forEach(templateId => {
-          // work with greatest nested templates first
-          let matchTemplateEnd = l.match(reEndAnyTemplate);
-          if (matchTemplateEnd) {
-            let idx = activeTemplateIds.indexOf(matchTemplateEnd[2]);
-            if (idx >= 0) {
-              activeTemplateIds.splice(idx, 1); // remote template whose end has just been found
-            }
-          }
-          if (Object.keys(activeTemplateIds).length > 0) {
-            // still in a template, nested or otherwise
-            let templateId = activeTemplateIds[activeTemplateIds.length - 1];
-            if (!templates[templateId]) templates[templateId] = ''; // start new template text if there is none yet
-          }
-          templates[templateId] += `${l}\n`;
-        });
+      // track template nesting
+      let templateId = matchTemplateStart[2];
+      activeTemplateIds.push(templateId);
+      templates[templateId] = '';
     }
+    activeTemplateIds
+      .slice()
+      .reverse() // work with greatest nested templates first
+      .forEach(templateId => {
+        let matchTemplateEnd = l.match(reEndAnyTemplate);
+        if (matchTemplateEnd) {
+          let idx = activeTemplateIds.indexOf(matchTemplateEnd[2]);
+          if (idx >= 0) {
+            activeTemplateIds.splice(idx, 1); // remote template whose end has just been found
+          }
+        }
+        templates[templateId] += `${l}\n`;
+      });
   });
   // Make template-substituted output by filling in template TARGET-(s) with stored template text.
   let expandTemplate = function(templateText) {
-    console.log(`yarf ${templateText}`);
     let contentOut = '';
     // Manage template nesting
     let nestedTemplates = [];
@@ -135,6 +130,10 @@ function templateAlterFile(logger, templateName, filePath) {
       let matchTemplateStart = l.match(reStartAnyTemplate);
       if (matchTemplateStart) {
         nestedTemplates.push(matchTemplateStart[2]); // track template nesting
+        // Don't output the outer template Start
+        if (nestedTemplates.length == 1) {
+          return;
+        }
       } else {
         let matchTemplateEnd = l.match(reEndAnyTemplate);
         if (matchTemplateEnd) {
@@ -142,11 +141,21 @@ function templateAlterFile(logger, templateName, filePath) {
           if (idx >= 0) {
             nestedTemplates.splice(idx, 1); // remote template whose end has just been found
           }
+          // Don't output the outer template End
+          if (nestedTemplates.length == 0) {
+            return;
+          }
         }
       }
-      let m = l.match(reTemplatePrefixComment);
-      if (m) {
-        contentOut += `${m[1]}${m[3]}\n`; // append text to active template
+      // Don't output the outer template Target
+      let matchTemplateTarget = l.match(reTarget);
+      if (matchTemplateTarget && nestedTemplates.length == 1) {
+        return;
+      }
+      // Output the prefix-stripped template text.
+      let matchTemplateTargetPrefix = l.match(reTemplatePrefixComment);
+      if (matchTemplateTargetPrefix) {
+        contentOut += `${matchTemplateTargetPrefix[1]}${matchTemplateTargetPrefix[3]}\n`; // append text to active template
       } else {
         contentOut += `${l}\n`;
       }
