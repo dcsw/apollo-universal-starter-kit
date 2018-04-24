@@ -193,7 +193,7 @@ function templateAlterFile(logger, templateName, filePath) {
 }
 
 function templateAlterFiles(logger, templateName, destinationPath) {
-  logger.info(`Template substituting ${destinationPath} files…`);
+  // logger.info(`Template substituting ${destinationPath} files…`);
   // template-substitute values
   shell.ls('-Rl', destinationPath).forEach(entry => {
     let filePath = path.join(destinationPath, entry.name);
@@ -242,7 +242,7 @@ function specCorrectAlterTemplateText(logger, filePath, arraySpec) {
 }
 
 function xyNamesSubDirFileContents(logger, destinationPath, arraySpec) {
-  logger.info(`Substituting non-templated areas in ${destinationPath} files…`);
+  // logger.info(`Substituting non-templated areas in ${destinationPath} files…`);
   shell.ls('-Rl', destinationPath).forEach(entry => {
     if (entry.isFile()) {
       let filePath = path.join(destinationPath, entry.name);
@@ -426,7 +426,7 @@ module.exports = (action, args, options, logger) => {
             templateAlterFile(logger, seedType, f);
           });
           // Change template XXXX's and YYYY's to entity names
-          logger.info(`Substituting non-templated areas in all scaffolded files…`);
+          // logger.info(`Substituting non-templated areas in all scaffolded files…`);
           moduleDirs.forEach(p => {
             xyNamesSubDirFileContents(logger, p, makeArraySpec(args.srcEntityName, args.linkedEntityName));
           });
