@@ -96,7 +96,7 @@ function templateAlterFile(logger, templateName, filePath) {
   let reStartAnyTemplate = new RegExp(`(\\/\\/|#)\\sSTART\\-(.+\\-.+)`);
   // let reEnd = new RegExp(`(\\/\\/|#)\\sEND\\-(${templateName}\\-.+)`);
   let reEndAnyTemplate = new RegExp(`(\\/\\/|#)\\sEND\\-(.+\\-.+)`);
-  let reTarget = new RegExp(`(\\/\\/|#)\\sTARGET\\-(${templateName}\\-.+)`);
+  let reTemplateTarget = new RegExp(`(\\/\\/|#)\\sTARGET\\-(${templateName}\\-.+)`);
   // let reTargetAnyTemplate = new RegExp(`(\\/\\/|#)\\sTARGET\\-(.+\\-.+)`);
   let reTemplatePrefixComment = new RegExp('^(\\s*)(\\/\\/\\s|#)(.*)');
   linesContent.forEach(l => {
@@ -123,6 +123,7 @@ function templateAlterFile(logger, templateName, filePath) {
   });
   // Make template-substituted output by filling in template TARGET-(s) with stored template text.
   let expandTemplate = function(templateText) {
+    // console.log(`Raw Template Text\n${templateText}\n`)
     let contentOut = '';
     // Manage template nesting
     let nestedTemplates = [];
@@ -148,7 +149,7 @@ function templateAlterFile(logger, templateName, filePath) {
         }
       }
       // Don't output the outer template Target
-      let matchTemplateTarget = l.match(reTarget);
+      let matchTemplateTarget = l.match(reTemplateTarget);
       if (matchTemplateTarget && nestedTemplates.length == 1) {
         return;
       }
@@ -160,12 +161,12 @@ function templateAlterFile(logger, templateName, filePath) {
         contentOut += `${l}\n`;
       }
     });
+    // console.log(`Expanded Template Text\n${contentOut}\n`)
     return contentOut;
   };
   // Now create content with expanded templates
   let contentOut = '';
   linesContent.forEach(l => {
-    contentOut += `${l}\n`;
     let matchTemplateStart = l.match(reStartAnyTemplate);
     // Manage template nesting
     if (matchTemplateStart) {
@@ -181,11 +182,12 @@ function templateAlterFile(logger, templateName, filePath) {
     }
     if (activeTemplateIds.length == 0) {
       // Not in a template definition
-      let matchTemplateTarget = l.match(reTarget);
+      let matchTemplateTarget = l.match(reTemplateTarget);
       if (matchTemplateTarget) {
         contentOut += expandTemplate(templates[matchTemplateTarget[2]]);
       }
     }
+    contentOut += `${l}\n`;
   });
   contentOut = contentOut.substring(0, contentOut.length - 1);
   // Rewrite file w/template-substituted content
