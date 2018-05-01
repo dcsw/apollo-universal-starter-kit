@@ -1,13 +1,13 @@
 import { truncateTables } from '../../sql/helpers';
 
 export async function seed(knex, Promise) {
-  await truncateTables(knex, Promise, [
-    'xxxx'
-    // START-TEMPLATE-LINKED-ENTITY-0
-    // // 'yyyy',
-    // END-TEMPLATE-LINKED-ENTITY-0
-    // TARGET-TEMPLATE-LINKED-ENTITY-0
-  ]);
+  // await truncateTables(knex, Promise, [
+  //   'xxxx'
+  //   // START-TEMPLATE-LINKED-ENTITY-0
+  //   // // 'yyyy',
+  //   // END-TEMPLATE-LINKED-ENTITY-0
+  //   // TARGET-TEMPLATE-LINKED-ENTITY-0
+  // ]);
 
   // START-SEED-TEMPLATE-1
   // await Promise.all(

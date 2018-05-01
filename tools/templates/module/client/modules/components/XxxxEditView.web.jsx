@@ -62,7 +62,7 @@ const XxxxEditView = ({ loading, xxxx, match, location, subscribeToMore, addXxxx
           //   <XxxxYyyys xxxxId={Number(match.params.id)} yyyys={xxxxObj.yyyys} subscribeToMore={subscribeToMore} />
           // )
           // END-TEMPLATE-LINKED-ENTITY-1
-          // TARGET-TEMPLATE-LINKED-ENTITY-1
+          // TARGET-TEMPLATE-LINKED-ENTITY-1 USE-SEPARATOR(',')
         }
       </PageLayout>
     );

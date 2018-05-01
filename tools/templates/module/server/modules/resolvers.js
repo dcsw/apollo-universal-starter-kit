@@ -136,7 +136,7 @@ export default pubsub => ({
     //     }
     //   });
     //   return yyyy;
-    // }
+    // },
     // END-TEMPLATE-LINKED-ENTITY-2
     // TARGET-TEMPLATE-LINKED-ENTITY-2
   },

@@ -40,7 +40,7 @@ const XxxxEditView = ({ loading, xxxx, navigation, subscribeToMore, addXxxx, edi
           //   <XxxxYyyys xxxxId={navigation.state.params.id} yyyys={xxxxObj.yyyys} subscribeToMore={subscribeToMore} />
           // )
           // END-TEMPLATE-LINKED-ENTITY-1
-          // TARGET-TEMPLATE-LINKED-ENTITY-1
+          // TARGET-TEMPLATE-LINKED-ENTITY-1 USE-SEPARATOR(',')
         }
       </View>
     );

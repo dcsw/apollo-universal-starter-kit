@@ -1,6 +1,6 @@
 const defaultState = {
   // START-TEMPLATE-LINKED-ENTITY-0
-  // yyyy: { id: null, content: '' }
+  // yyyy: { id: null, content: '' },
   // END-TEMPLATE-LINKED-ENTITY-0
   // TARGET-TEMPLATE-LINKED-ENTITY-0
 };

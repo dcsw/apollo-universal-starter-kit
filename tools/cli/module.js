@@ -92,12 +92,15 @@ function templateAlterFile(logger, templateName, filePath) {
   // Find templates in file.
   let templates = {};
   let activeTemplateIds = []; // manage template nesting
-  // let reStart = new RegExp(`(\\/\\/|#)\\sSTART\\-(${templateName}\\-.+)`);
   let reStartAnyTemplate = new RegExp(`(\\/\\/|#)\\sSTART\\-(.+\\-.+)`);
-  // let reEnd = new RegExp(`(\\/\\/|#)\\sEND\\-(${templateName}\\-.+)`);
   let reEndAnyTemplate = new RegExp(`(\\/\\/|#)\\sEND\\-(.+\\-.+)`);
-  let reTemplateTarget = new RegExp(`(\\/\\/|#)\\sTARGET\\-(${templateName}\\-.+)`);
-  // let reTargetAnyTemplate = new RegExp(`(\\/\\/|#)\\sTARGET\\-(.+\\-.+)`);
+  // let reTemplateTarget = new RegExp(`(\\/\\/|#)\\sTARGET\\-(${templateName.replace(/\-/g, '\\-')}\\-\\S+)`);
+  let reTemplateTargetWithSeparator = new RegExp(
+    `(\\/\\/|#)\\sTARGET\\-(${templateName.replace(
+      /\\-/g,
+      '\\-'
+    )}\\-\\S+)\\s*(USE-SEPARATOR)?\\(?\\'?(.*)\\'?\\)?\\s*(prepend-separator)?`
+  );
   let reTemplatePrefixComment = new RegExp('^(\\s*)(\\/\\/\\s|#)(.*)');
   linesContent.forEach(l => {
     let matchTemplateStart = l.match(reStartAnyTemplate);
@@ -148,15 +151,15 @@ function templateAlterFile(logger, templateName, filePath) {
           }
         }
       }
-      // Don't output the outer template Target
-      let matchTemplateTarget = l.match(reTemplateTarget);
-      if (matchTemplateTarget && nestedTemplates.length == 1) {
-        return;
-      }
+      // // Don't output the outer template Target
+      // let matchTemplateTarget = l.match(reTemplateTarget);
+      // if (matchTemplateTarget && nestedTemplates.length == 1) {
+      //   return;
+      // }
       // Output the prefix-stripped template text.
-      let matchTemplateTargetPrefix = l.match(reTemplatePrefixComment);
-      if (matchTemplateTargetPrefix) {
-        contentOut += `${matchTemplateTargetPrefix[1]}${matchTemplateTargetPrefix[3]}\n`; // append text to active template
+      let matchTemplatePrefix = l.match(reTemplatePrefixComment);
+      if (matchTemplatePrefix) {
+        contentOut += `${matchTemplatePrefix[1]}${matchTemplatePrefix[3]}\n`; // append text to active template
       } else {
         contentOut += `${l}\n`;
       }
@@ -182,8 +185,17 @@ function templateAlterFile(logger, templateName, filePath) {
     }
     if (activeTemplateIds.length == 0) {
       // Not in a template definition
-      let matchTemplateTarget = l.match(reTemplateTarget);
+      let matchTemplateTarget = l.match(reTemplateTargetWithSeparator);
       if (matchTemplateTarget) {
+        if (matchTemplateTarget[3] && matchTemplateTarget[3].indexOf('USE-SEPARATOR') >= 0) {
+          if (!matchTemplateTarget[5] || matchTemplateTarget[5] != 'prepend-separator') {
+            l += ' prepend-separator';
+          } else {
+            contentOut = contentOut.slice(0, contentOut.length - 1);
+            contentOut += `${matchTemplateTarget[4]}\n`;
+          }
+        }
+        // console.log(`Expanding template: template=${matchTemplateTarget[2]} templateName=${templateName} filePath=${filePath}`);
         contentOut += expandTemplate(templates[matchTemplateTarget[2]]);
       }
     }
@@ -425,6 +437,7 @@ module.exports = (action, args, options, logger) => {
             `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
             `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
           ].forEach(f => {
+            console.log(`XXX Expanding ${seedType} on ${f}`);
             templateAlterFile(logger, seedType, f);
           });
           // Change template XXXX's and YYYY's to entity names

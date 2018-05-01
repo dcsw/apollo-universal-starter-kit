@@ -35,7 +35,7 @@ exports.up = function(knex, Promise) {
     //   //  .onDelete('CASCADE') // uncomment for when yyyy completely depends on xxxx's existence
     // })
     // END-SEED-MANY-TO-MANY-LINKED-ENTITY-TEMPLATE-1
-    // TARGET-SEED-MANY-TO-MANY-LINKED-ENTITY-TEMPLATE-1
+    // TARGET-SEED-MANY-TO-MANY-LINKED-ENTITY-TEMPLATE-1 USE-SEPARATOR(',')
   ]);
 };
 
