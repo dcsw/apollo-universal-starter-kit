@@ -47,7 +47,7 @@ export default pubsub => ({
       // return context.loaders.getYyyysForXxxxIds.load(id);
     // }
     // END-TEMPLATE-LINKED-ENTITY-1
-    // TARGET-TEMPLATE-LINKED-ENTITY-1
+    // TARGET-TEMPLATE-LINKED-ENTITY-1 USE-SEPARATOR(',')
   },
   Mutation: {
     async addXxxx(obj, { input }, context) {
@@ -136,9 +136,9 @@ export default pubsub => ({
     //     }
     //   });
     //   return yyyy;
-    // },
+    // }
     // END-TEMPLATE-LINKED-ENTITY-2
-    // TARGET-TEMPLATE-LINKED-ENTITY-2
+    // TARGET-TEMPLATE-LINKED-ENTITY-2 USE-SEPARATOR(',')
   },
   Subscription: {
     xxxxUpdated: {
@@ -167,6 +167,6 @@ export default pubsub => ({
     //   )
     // }
     // END-TEMPLATE-LINKED-ENTITY-3
-    // TARGET-TEMPLATE-LINKED-ENTITY-3
+    // TARGET-TEMPLATE-LINKED-ENTITY-3 USE-SEPARATOR(',')
   }
 });

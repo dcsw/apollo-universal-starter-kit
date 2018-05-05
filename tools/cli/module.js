@@ -94,12 +94,11 @@ function templateAlterFile(logger, templateName, filePath) {
   let activeTemplateIds = []; // manage template nesting
   let reStartAnyTemplate = new RegExp(`(\\/\\/|#)\\sSTART\\-(.+\\-.+)`);
   let reEndAnyTemplate = new RegExp(`(\\/\\/|#)\\sEND\\-(.+\\-.+)`);
-  // let reTemplateTarget = new RegExp(`(\\/\\/|#)\\sTARGET\\-(${templateName.replace(/\-/g, '\\-')}\\-\\S+)`);
   let reTemplateTargetWithSeparator = new RegExp(
     `(\\/\\/|#)\\sTARGET\\-(${templateName.replace(
       /\\-/g,
       '\\-'
-    )}\\-\\S+)\\s*(USE-SEPARATOR)?\\(?\\'?(.*)\\'?\\)?\\s*(prepend-separator)?`
+    )}\\-\\S+)\\s*(USE-SEPARATOR)?\\(?\\'?([^']*)\\'?\\)?\\s*(prepend-separator)?`
   );
   let reTemplatePrefixComment = new RegExp('^(\\s*)(\\/\\/\\s|#)(.*)');
   linesContent.forEach(l => {
@@ -187,11 +186,16 @@ function templateAlterFile(logger, templateName, filePath) {
       // Not in a template definition
       let matchTemplateTarget = l.match(reTemplateTargetWithSeparator);
       if (matchTemplateTarget) {
+        // console.log(`barf - ${filePath}`)
+        // console.log(l);
+        // console.log(matchTemplateTarget);
         if (matchTemplateTarget[3] && matchTemplateTarget[3].indexOf('USE-SEPARATOR') >= 0) {
           if (!matchTemplateTarget[5] || matchTemplateTarget[5] != 'prepend-separator') {
+            // console.log(` larf ${matchTemplateTarget} - ${matchTemplateTarget[5]}`)
             l += ' prepend-separator';
           } else {
-            contentOut = contentOut.slice(0, contentOut.length - 1);
+            // console.log(` darf ${matchTemplateTarget} - ${matchTemplateTarget[3]}`)
+            contentOut = contentOut.slice(0, contentOut.length - 2);
             contentOut += `${matchTemplateTarget[4]}\n`;
           }
         }
@@ -437,7 +441,7 @@ module.exports = (action, args, options, logger) => {
             `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
             `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
           ].forEach(f => {
-            console.log(`XXX Expanding ${seedType} on ${f}`);
+            console.log(`Expanding ${seedType} on ${f}`);
             templateAlterFile(logger, seedType, f);
           });
           // Change template XXXX's and YYYY's to entity names
