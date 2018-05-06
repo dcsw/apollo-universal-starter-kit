@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/Cellar/node/9.5.0/bin/node /usr/local/bin/yarn seed
+  /usr/local/Cellar/node/9.5.0/bin/node /usr/local/bin/yarn cli link-modules dog mouse --linked-seed-count 4
 
 PATH: 
   /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:/opt/X11/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Wireshark.app/Contents/MacOS:/Users/dc
@@ -13724,7 +13724,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: sh
-  Arguments: -c npm run migrate && knex seed:run
+  Arguments: -c node tools/cli link-modules dog mouse --linked-seed-count 4
   Directory: /Users/dc/Documents/code/apollo-universal-starter-kit
   Output:
   

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
 import XxxxForm from './XxxxForm';
 // START-TEMPLATE-LINKED-ENTITY-0
@@ -32,17 +32,16 @@ const XxxxEditView = ({ loading, xxxx, navigation, subscribeToMore, addXxxx, edi
     );
   } else {
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <XxxxForm onSubmit={onSubmit(xxxxObj, addXxxx, editXxxx)} initialValues={xxxxObj ? xxxxObj : {}} />
         {
           // START-TEMPLATE-LINKED-ENTITY-1
-          // xxxxObj && (
-          //   <XxxxYyyys xxxxId={navigation.state.params.id} yyyys={xxxxObj.yyyys} subscribeToMore={subscribeToMore} />
-          // )
+          //   <XxxxYyyys xxxxId={navigation.state.params.id} yyyys={xxxxObj.yyyys ? xxxxObj.yyyys : {}} subscribeToMore={subscribeToMore} />
           // END-TEMPLATE-LINKED-ENTITY-1
-          // TARGET-TEMPLATE-LINKED-ENTITY-1 USE-SEPARATOR(',')
         }
-      </View>
+        {// TARGET-TEMPLATE-LINKED-ENTITY-1
+        }
+      </ScrollView>
     );
   }
 };

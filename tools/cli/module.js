@@ -95,7 +95,8 @@ function templateAlterFile(logger, templateName, filePath) {
   let reStartAnyTemplate = new RegExp(`(\\/\\/|#)\\sSTART\\-(.+\\-.+)`);
   let reEndAnyTemplate = new RegExp(`(\\/\\/|#)\\sEND\\-(.+\\-.+)`);
   let reTemplateTargetWithSeparator = new RegExp(
-    `(\\/\\/|#)\\sTARGET\\-(${templateName.replace(
+    // Note the leading '{' for JSX
+    `(\\{?\\/\\/|#)\\sTARGET\\-(${templateName.replace(
       /\\-/g,
       '\\-'
     )}\\-\\S+)\\s*(USE-SEPARATOR)?\\(?\\'?([^']*)\\'?\\)?\\s*(prepend-separator)?`
