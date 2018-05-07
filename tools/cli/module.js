@@ -51,7 +51,7 @@ function fixFileNames(destinationPath, srcEntityName, arraySpec) {
   });
 }
 
-function copyModuleFiles(logger, module, templatePath, location) {
+function copyModuleFiles(logger, module, templatePath, location, includeInMenu = true) {
   logger.info(`Copying ${location} files…`);
 
   // create new module directory
@@ -74,9 +74,10 @@ function copyModuleFiles(logger, module, templatePath, location) {
     // prepend import module
     const prepend = `import ${module} from './${module}';\n`;
     fs.writeFileSync(path, prepend + data);
-
-    // add module to Feature function
-    shell.sed('-i', re, `Feature(${module}, ${match[1]})`, path);
+    if (includeInMenu) {
+      // add module to Feature function
+      shell.sed('-i', re, `Feature(${module}, ${match[1]})`, path);
+    }
 
     logger.info(`✔ Module for ${location} successfully created!`);
   }
@@ -331,7 +332,7 @@ module.exports = (action, args, options, logger) => {
   if (args.location === 'client' || args.location === 'both') {
     switch (action) {
       case 'addmodule':
-        copyModuleFiles(logger, args.module, templatePath, 'client/modules');
+        copyModuleFiles(logger, args.module, templatePath, 'client/modules', !options.nomenu);
         xyNamesSubDirFileContents(
           logger,
           `${__dirname}/../../src/client/modules/${args.module}`,
@@ -442,7 +443,7 @@ module.exports = (action, args, options, logger) => {
             `${__dirname}/../../src/server/database/seeds/003_${args.srcEntityName}.js`,
             `${__dirname}/../../src/server/database/migrations/003_${args.srcEntityName}.js`
           ].forEach(f => {
-            console.log(`Expanding ${seedType} on ${f}`);
+            // console.log(`Expanding ${seedType} on ${f}`);
             templateAlterFile(logger, seedType, f);
           });
           // Change template XXXX's and YYYY's to entity names

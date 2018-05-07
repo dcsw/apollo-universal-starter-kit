@@ -18,6 +18,7 @@ prog
   //   prog.BOOL,
   //   false
   // )
+  .option('--nomenu', "Don't include in the menu.", prog.BOOL, false)
   .action((args, options, logger) => {
     console.log(`${args} - ${JSON.stringify(options)}`);
     moduleCmd('addmodule', args, options, logger);
