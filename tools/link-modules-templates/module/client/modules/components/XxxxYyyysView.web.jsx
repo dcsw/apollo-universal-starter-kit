@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Table, Button } from '../../common/components/web';
 import XxxxYyyyForm from './XxxxYyyyForm';
@@ -51,7 +52,14 @@ export default class XxxxYyyysView extends React.PureComponent {
       {
         title: 'Content',
         dataIndex: 'content',
-        key: 'content'
+        key: 'content',
+        render: (text, record) => (
+          <div>
+            <Link id="back-button" to={`/yyyy/${record.id}`}>
+              {record.title}
+            </Link>
+          </div>
+        )
       },
       {
         title: 'Actions',
@@ -66,7 +74,7 @@ export default class XxxxYyyysView extends React.PureComponent {
               onClick={() => this.handleEditYyyy(record.id, record.content)}
             >
               Edit
-            </Button>{' '}
+            </Button>
             <Button color="primary" size="sm" className="delete-yyyy" onClick={() => this.handleDeleteYyyy(record.id)}>
               Delete
             </Button>
