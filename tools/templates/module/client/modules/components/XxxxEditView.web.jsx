@@ -54,15 +54,14 @@ const XxxxEditView = ({ loading, xxxx, match, location, subscribeToMore, addXxxx
           Back
         </Link>
         <h2>{xxxx ? 'Edit' : 'Create'} Xxxx</h2>
-        <XxxxForm onSubmit={onSubmit(xxxxObj, addXxxx, editXxxx)} initialValues={xxxxObj} />
+        <XxxxForm onSubmit={onSubmit(xxxxObj, addXxxx, editXxxx)} initialValues={xxxxObj ? xxxxObj : {}} />
         <br />
         {
           // START-TEMPLATE-LINKED-ENTITY-1
-          // xxxxObj && (
-          //   <XxxxYyyys xxxxId={Number(match.params.id)} yyyys={xxxxObj.yyyys} subscribeToMore={subscribeToMore} />
-          // )
+          //   <XxxxYyyys xxxxId={Number(match.params.id)} yyyys={xxxxObj.yyyys ? xxxxObj.yyyys : {}} subscribeToMore={subscribeToMore} />
           // END-TEMPLATE-LINKED-ENTITY-1
-          // TARGET-TEMPLATE-LINKED-ENTITY-1 USE-SEPARATOR(',')
+        }
+        {// TARGET-TEMPLATE-LINKED-ENTITY-1
         }
       </PageLayout>
     );
