@@ -46,16 +46,19 @@ const XxxxNavigator = StackNavigator({
 });
 
 export default new Feature({
-  tabItem: {
-    Xxxx: {
-      screen: XxxxNavigator,
-      navigationOptions: {
-        tabBarIcon: createTabBarIconWrapper(Ionicons, {
-          name: 'ios-book-outline',
-          size: 30
-        })
-      }
-    }
-  },
+  // START-ADD-MENU-ITEM-TEMPLATE-1
+  // tabItem: {
+  //   Xxxx: {
+  //     screen: XxxxNavigator,
+  //     navigationOptions: {
+  //       tabBarIcon: createTabBarIconWrapper(Ionicons, {
+  //         name: 'ios-book-outline',
+  //         size: 30
+  //       })
+  //     }
+  //   }
+  // },
+  // END-ADD-MENU-ITEM-TEMPLATE-1
+  // TARGET-ADD-MENU-ITEM-TEMPLATE-1
   reducer: { xxxx: reducers }
 });

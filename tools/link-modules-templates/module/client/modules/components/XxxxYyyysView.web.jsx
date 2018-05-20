@@ -55,7 +55,7 @@ export default class XxxxYyyysView extends React.PureComponent {
         key: 'content',
         render: (text, record) => (
           <div>
-            <Link id="back-button" to={`/yyyy/${record.id}`}>
+            <Link id="edit-yyyy" to={`/yyyy/${record.id}`}>
               {record.title}
             </Link>
           </div>

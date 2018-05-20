@@ -51,7 +51,7 @@ function fixFileNames(destinationPath, srcEntityName, arraySpec) {
   });
 }
 
-function copyModuleFiles(logger, module, templatePath, location, includeInMenu = true) {
+function copyModuleFiles(logger, module, templatePath, location) {
   logger.info(`Copying ${location} files…`);
 
   // create new module directory
@@ -74,10 +74,8 @@ function copyModuleFiles(logger, module, templatePath, location, includeInMenu =
     // prepend import module
     const prepend = `import ${module} from './${module}';\n`;
     fs.writeFileSync(path, prepend + data);
-    if (includeInMenu) {
-      // add module to Feature function
-      shell.sed('-i', re, `Feature(${module}, ${match[1]})`, path);
-    }
+    // add module to Feature function
+    shell.sed('-i', re, `Feature(${module}, ${match[1]})`, path);
 
     logger.info(`✔ Module for ${location} successfully created!`);
   }
@@ -332,7 +330,14 @@ module.exports = (action, args, options, logger) => {
   if (args.location === 'client' || args.location === 'both') {
     switch (action) {
       case 'addmodule':
-        copyModuleFiles(logger, args.module, templatePath, 'client/modules', !options.nomenu);
+        copyModuleFiles(logger, args.module, templatePath, 'client/modules');
+
+        // Template expand ADD-MENU-ITEM template
+        logger.info(`Adding menu items`);
+        if (!options.nomenu) {
+          templateAlterFiles(logger, 'ADD-MENU-ITEM-TEMPLATE', `${__dirname}/../../src/client/modules/${args.module}`);
+        }
+
         xyNamesSubDirFileContents(
           logger,
           `${__dirname}/../../src/client/modules/${args.module}`,

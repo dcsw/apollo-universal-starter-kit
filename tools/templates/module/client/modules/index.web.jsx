@@ -11,12 +11,15 @@ import Feature from '../connector';
 
 export default new Feature({
   route: [<Route exact path="/xxxxs" component={Xxxx} />, <Route exact path="/xxxx/:id" component={XxxxEdit} />],
-  navItem: (
-    <MenuItem key="/xxxxs">
-      <NavLink to="/xxxxs" className="nav-link" activeClassName="active">
-        Xxxxs
-      </NavLink>
-    </MenuItem>
-  ),
+  // START-ADD-MENU-ITEM-TEMPLATE-1
+  // navItem: (
+  //   <MenuItem key="/xxxxs">
+  //     <NavLink to="/xxxxs" className="nav-link" activeClassName="active">
+  //       Xxxxs
+  //     </NavLink>
+  //   </MenuItem>
+  // ),
+  // END-ADD-MENU-ITEM-TEMPLATE-1
+  // TARGET-ADD-MENU-ITEM-TEMPLATE-1
   reducer: { xxxx: reducers }
 });
